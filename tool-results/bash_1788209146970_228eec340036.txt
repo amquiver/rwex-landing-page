@@ -1,0 +1,1037 @@
+Started: 4561
+$ next dev -p 3000 2>&1 | tee dev.log
+▲ Next.js 16.1.3 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://21.0.7.34:3000
+- Environments: .env
+
+✓ Starting...
+✓ Ready in 774ms
+LISTEN 0      511                *:3000             *:*    users:(("next-server (v1",pid=4578,fd=22))
+---
+○ Compiling / ...
+⨯ ./src/app/page.tsx:22:1
+Export AboutPage doesn't exist in target module
+  20 | import { FinalCTA } from '@/components/sections/final-cta';
+  21 |
+> 22 | import { AboutPage } from '@/components/pages/about';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  23 | import { ProjectsPage } from '@/components/pages/projects';
+  24 | import { ProjectDetailPage } from '@/components/pages/project-detail';
+  25 | import { BlogPage } from '@/components/pages/blog';
+
+The export AboutPage was not found in module [project]/src/components/pages/about.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:22:1
+Export AboutPage doesn't exist in target module
+  20 | import { FinalCTA } from '@/components/sections/final-cta';
+  21 |
+> 22 | import { AboutPage } from '@/components/pages/about';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  23 | import { ProjectsPage } from '@/components/pages/projects';
+  24 | import { ProjectDetailPage } from '@/components/pages/project-detail';
+  25 | import { BlogPage } from '@/components/pages/blog';
+
+The export AboutPage was not found in module [project]/src/components/pages/about.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:26:1
+Export BlogDetailPage doesn't exist in target module
+  24 | import { ProjectDetailPage } from '@/components/pages/project-detail';
+  25 | import { BlogPage } from '@/components/pages/blog';
+> 26 | import { BlogDetailPage } from '@/components/pages/blog-detail';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  27 | import { ContactPage } from '@/components/pages/contact';
+  28 |
+  29 | const pageVariants = {
+
+The export BlogDetailPage was not found in module [project]/src/components/pages/blog-detail.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:26:1
+Export BlogDetailPage doesn't exist in target module
+  24 | import { ProjectDetailPage } from '@/components/pages/project-detail';
+  25 | import { BlogPage } from '@/components/pages/blog';
+> 26 | import { BlogDetailPage } from '@/components/pages/blog-detail';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  27 | import { ContactPage } from '@/components/pages/contact';
+  28 |
+  29 | const pageVariants = {
+
+The export BlogDetailPage was not found in module [project]/src/components/pages/blog-detail.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:25:1
+Export BlogPage doesn't exist in target module
+  23 | import { ProjectsPage } from '@/components/pages/projects';
+  24 | import { ProjectDetailPage } from '@/components/pages/project-detail';
+> 25 | import { BlogPage } from '@/components/pages/blog';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  26 | import { BlogDetailPage } from '@/components/pages/blog-detail';
+  27 | import { ContactPage } from '@/components/pages/contact';
+  28 |
+
+The export BlogPage was not found in module [project]/src/components/pages/blog.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:25:1
+Export BlogPage doesn't exist in target module
+  23 | import { ProjectsPage } from '@/components/pages/projects';
+  24 | import { ProjectDetailPage } from '@/components/pages/project-detail';
+> 25 | import { BlogPage } from '@/components/pages/blog';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  26 | import { BlogDetailPage } from '@/components/pages/blog-detail';
+  27 | import { ContactPage } from '@/components/pages/contact';
+  28 |
+
+The export BlogPage was not found in module [project]/src/components/pages/blog.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:19:1
+Export BlogPreviewSection doesn't exist in target module
+  17 | import { FeaturedProjectsSection } from '@/components/sections/featured-projects';
+  18 | import { TestimonialsSection } from '@/components/sections/testimonials';
+> 19 | import { BlogPreviewSection } from '@/components/sections/blog-preview';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  20 | import { FinalCTA } from '@/components/sections/final-cta';
+  21 |
+  22 | import { AboutPage } from '@/components/pages/about';
+
+The export BlogPreviewSection was not found in module [project]/src/components/sections/blog-preview.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:19:1
+Export BlogPreviewSection doesn't exist in target module
+  17 | import { FeaturedProjectsSection } from '@/components/sections/featured-projects';
+  18 | import { TestimonialsSection } from '@/components/sections/testimonials';
+> 19 | import { BlogPreviewSection } from '@/components/sections/blog-preview';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  20 | import { FinalCTA } from '@/components/sections/final-cta';
+  21 |
+  22 | import { AboutPage } from '@/components/pages/about';
+
+The export BlogPreviewSection was not found in module [project]/src/components/sections/blog-preview.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:27:1
+Export ContactPage doesn't exist in target module
+  25 | import { BlogPage } from '@/components/pages/blog';
+  26 | import { BlogDetailPage } from '@/components/pages/blog-detail';
+> 27 | import { ContactPage } from '@/components/pages/contact';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  28 |
+  29 | const pageVariants = {
+  30 |   initial: { opacity: 0, y: 20 },
+
+The export ContactPage was not found in module [project]/src/components/pages/contact.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:27:1
+Export ContactPage doesn't exist in target module
+  25 | import { BlogPage } from '@/components/pages/blog';
+  26 | import { BlogDetailPage } from '@/components/pages/blog-detail';
+> 27 | import { ContactPage } from '@/components/pages/contact';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  28 |
+  29 | const pageVariants = {
+  30 |   initial: { opacity: 0, y: 20 },
+
+The export ContactPage was not found in module [project]/src/components/pages/contact.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:15:1
+Export DevProcessSection doesn't exist in target module
+  13 | import { SolutionsSection } from '@/components/sections/solutions';
+  14 | import { WhyRwextechSection } from '@/components/sections/why-rwextech';
+> 15 | import { DevProcessSection } from '@/components/sections/dev-process';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  16 | import { TechStackSection } from '@/components/sections/tech-stack';
+  17 | import { FeaturedProjectsSection } from '@/components/sections/featured-projects';
+  18 | import { TestimonialsSection } from '@/components/sections/testimonials';
+
+The export DevProcessSection was not found in module [project]/src/components/sections/dev-process.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:15:1
+Export DevProcessSection doesn't exist in target module
+  13 | import { SolutionsSection } from '@/components/sections/solutions';
+  14 | import { WhyRwextechSection } from '@/components/sections/why-rwextech';
+> 15 | import { DevProcessSection } from '@/components/sections/dev-process';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  16 | import { TechStackSection } from '@/components/sections/tech-stack';
+  17 | import { FeaturedProjectsSection } from '@/components/sections/featured-projects';
+  18 | import { TestimonialsSection } from '@/components/sections/testimonials';
+
+The export DevProcessSection was not found in module [project]/src/components/sections/dev-process.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:17:1
+Export FeaturedProjectsSection doesn't exist in target module
+  15 | import { DevProcessSection } from '@/components/sections/dev-process';
+  16 | import { TechStackSection } from '@/components/sections/tech-stack';
+> 17 | import { FeaturedProjectsSection } from '@/components/sections/featured-projects';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  18 | import { TestimonialsSection } from '@/components/sections/testimonials';
+  19 | import { BlogPreviewSection } from '@/components/sections/blog-preview';
+  20 | import { FinalCTA } from '@/components/sections/final-cta';
+
+The export FeaturedProjectsSection was not found in module [project]/src/components/sections/featured-projects.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:17:1
+Export FeaturedProjectsSection doesn't exist in target module
+  15 | import { DevProcessSection } from '@/components/sections/dev-process';
+  16 | import { TechStackSection } from '@/components/sections/tech-stack';
+> 17 | import { FeaturedProjectsSection } from '@/components/sections/featured-projects';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  18 | import { TestimonialsSection } from '@/components/sections/testimonials';
+  19 | import { BlogPreviewSection } from '@/components/sections/blog-preview';
+  20 | import { FinalCTA } from '@/components/sections/final-cta';
+
+The export FeaturedProjectsSection was not found in module [project]/src/components/sections/featured-projects.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:20:1
+Export FinalCTA doesn't exist in target module
+  18 | import { TestimonialsSection } from '@/components/sections/testimonials';
+  19 | import { BlogPreviewSection } from '@/components/sections/blog-preview';
+> 20 | import { FinalCTA } from '@/components/sections/final-cta';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  21 |
+  22 | import { AboutPage } from '@/components/pages/about';
+  23 | import { ProjectsPage } from '@/components/pages/projects';
+
+The export FinalCTA was not found in module [project]/src/components/sections/final-cta.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:20:1
+Export FinalCTA doesn't exist in target module
+  18 | import { TestimonialsSection } from '@/components/sections/testimonials';
+  19 | import { BlogPreviewSection } from '@/components/sections/blog-preview';
+> 20 | import { FinalCTA } from '@/components/sections/final-cta';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  21 |
+  22 | import { AboutPage } from '@/components/pages/about';
+  23 | import { ProjectsPage } from '@/components/pages/projects';
+
+The export FinalCTA was not found in module [project]/src/components/sections/final-cta.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:7:1
+Export Footer doesn't exist in target module
+   5 |
+   6 | import { Navigation } from '@/components/navigation';
+>  7 | import { Footer } from '@/components/footer';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   8 | import { WhatsAppButton } from '@/components/whatsapp-button';
+   9 |
+  10 | import { HeroSection } from '@/components/sections/hero';
+
+The export Footer was not found in module [project]/src/components/footer.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:7:1
+Export Footer doesn't exist in target module
+   5 |
+   6 | import { Navigation } from '@/components/navigation';
+>  7 | import { Footer } from '@/components/footer';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   8 | import { WhatsAppButton } from '@/components/whatsapp-button';
+   9 |
+  10 | import { HeroSection } from '@/components/sections/hero';
+
+The export Footer was not found in module [project]/src/components/footer.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:10:1
+Export HeroSection doesn't exist in target module
+   8 | import { WhatsAppButton } from '@/components/whatsapp-button';
+   9 |
+> 10 | import { HeroSection } from '@/components/sections/hero';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  11 | import { TrustStats } from '@/components/sections/trust-stats';
+  12 | import { ServicesSection } from '@/components/sections/services';
+  13 | import { SolutionsSection } from '@/components/sections/solutions';
+
+The export HeroSection was not found in module [project]/src/components/sections/hero.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:10:1
+Export HeroSection doesn't exist in target module
+   8 | import { WhatsAppButton } from '@/components/whatsapp-button';
+   9 |
+> 10 | import { HeroSection } from '@/components/sections/hero';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  11 | import { TrustStats } from '@/components/sections/trust-stats';
+  12 | import { ServicesSection } from '@/components/sections/services';
+  13 | import { SolutionsSection } from '@/components/sections/solutions';
+
+The export HeroSection was not found in module [project]/src/components/sections/hero.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:6:1
+Export Navigation doesn't exist in target module
+  4 | import { useNavigationStore } from '@/store/navigation';
+  5 |
+> 6 | import { Navigation } from '@/components/navigation';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 | import { Footer } from '@/components/footer';
+  8 | import { WhatsAppButton } from '@/components/whatsapp-button';
+  9 |
+
+The export Navigation was not found in module [project]/src/components/navigation.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:6:1
+Export Navigation doesn't exist in target module
+  4 | import { useNavigationStore } from '@/store/navigation';
+  5 |
+> 6 | import { Navigation } from '@/components/navigation';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 | import { Footer } from '@/components/footer';
+  8 | import { WhatsAppButton } from '@/components/whatsapp-button';
+  9 |
+
+The export Navigation was not found in module [project]/src/components/navigation.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:24:1
+Export ProjectDetailPage doesn't exist in target module
+  22 | import { AboutPage } from '@/components/pages/about';
+  23 | import { ProjectsPage } from '@/components/pages/projects';
+> 24 | import { ProjectDetailPage } from '@/components/pages/project-detail';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  25 | import { BlogPage } from '@/components/pages/blog';
+  26 | import { BlogDetailPage } from '@/components/pages/blog-detail';
+  27 | import { ContactPage } from '@/components/pages/contact';
+
+The export ProjectDetailPage was not found in module [project]/src/components/pages/project-detail.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:24:1
+Export ProjectDetailPage doesn't exist in target module
+  22 | import { AboutPage } from '@/components/pages/about';
+  23 | import { ProjectsPage } from '@/components/pages/projects';
+> 24 | import { ProjectDetailPage } from '@/components/pages/project-detail';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  25 | import { BlogPage } from '@/components/pages/blog';
+  26 | import { BlogDetailPage } from '@/components/pages/blog-detail';
+  27 | import { ContactPage } from '@/components/pages/contact';
+
+The export ProjectDetailPage was not found in module [project]/src/components/pages/project-detail.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:23:1
+Export ProjectsPage doesn't exist in target module
+  21 |
+  22 | import { AboutPage } from '@/components/pages/about';
+> 23 | import { ProjectsPage } from '@/components/pages/projects';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  24 | import { ProjectDetailPage } from '@/components/pages/project-detail';
+  25 | import { BlogPage } from '@/components/pages/blog';
+  26 | import { BlogDetailPage } from '@/components/pages/blog-detail';
+
+The export ProjectsPage was not found in module [project]/src/components/pages/projects.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:23:1
+Export ProjectsPage doesn't exist in target module
+  21 |
+  22 | import { AboutPage } from '@/components/pages/about';
+> 23 | import { ProjectsPage } from '@/components/pages/projects';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  24 | import { ProjectDetailPage } from '@/components/pages/project-detail';
+  25 | import { BlogPage } from '@/components/pages/blog';
+  26 | import { BlogDetailPage } from '@/components/pages/blog-detail';
+
+The export ProjectsPage was not found in module [project]/src/components/pages/projects.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:12:1
+Export ServicesSection doesn't exist in target module
+  10 | import { HeroSection } from '@/components/sections/hero';
+  11 | import { TrustStats } from '@/components/sections/trust-stats';
+> 12 | import { ServicesSection } from '@/components/sections/services';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import { SolutionsSection } from '@/components/sections/solutions';
+  14 | import { WhyRwextechSection } from '@/components/sections/why-rwextech';
+  15 | import { DevProcessSection } from '@/components/sections/dev-process';
+
+The export ServicesSection was not found in module [project]/src/components/sections/services.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:12:1
+Export ServicesSection doesn't exist in target module
+  10 | import { HeroSection } from '@/components/sections/hero';
+  11 | import { TrustStats } from '@/components/sections/trust-stats';
+> 12 | import { ServicesSection } from '@/components/sections/services';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import { SolutionsSection } from '@/components/sections/solutions';
+  14 | import { WhyRwextechSection } from '@/components/sections/why-rwextech';
+  15 | import { DevProcessSection } from '@/components/sections/dev-process';
+
+The export ServicesSection was not found in module [project]/src/components/sections/services.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:13:1
+Export SolutionsSection doesn't exist in target module
+  11 | import { TrustStats } from '@/components/sections/trust-stats';
+  12 | import { ServicesSection } from '@/components/sections/services';
+> 13 | import { SolutionsSection } from '@/components/sections/solutions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  14 | import { WhyRwextechSection } from '@/components/sections/why-rwextech';
+  15 | import { DevProcessSection } from '@/components/sections/dev-process';
+  16 | import { TechStackSection } from '@/components/sections/tech-stack';
+
+The export SolutionsSection was not found in module [project]/src/components/sections/solutions.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:13:1
+Export SolutionsSection doesn't exist in target module
+  11 | import { TrustStats } from '@/components/sections/trust-stats';
+  12 | import { ServicesSection } from '@/components/sections/services';
+> 13 | import { SolutionsSection } from '@/components/sections/solutions';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  14 | import { WhyRwextechSection } from '@/components/sections/why-rwextech';
+  15 | import { DevProcessSection } from '@/components/sections/dev-process';
+  16 | import { TechStackSection } from '@/components/sections/tech-stack';
+
+The export SolutionsSection was not found in module [project]/src/components/sections/solutions.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:16:1
+Export TechStackSection doesn't exist in target module
+  14 | import { WhyRwextechSection } from '@/components/sections/why-rwextech';
+  15 | import { DevProcessSection } from '@/components/sections/dev-process';
+> 16 | import { TechStackSection } from '@/components/sections/tech-stack';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  17 | import { FeaturedProjectsSection } from '@/components/sections/featured-projects';
+  18 | import { TestimonialsSection } from '@/components/sections/testimonials';
+  19 | import { BlogPreviewSection } from '@/components/sections/blog-preview';
+
+The export TechStackSection was not found in module [project]/src/components/sections/tech-stack.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:16:1
+Export TechStackSection doesn't exist in target module
+  14 | import { WhyRwextechSection } from '@/components/sections/why-rwextech';
+  15 | import { DevProcessSection } from '@/components/sections/dev-process';
+> 16 | import { TechStackSection } from '@/components/sections/tech-stack';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  17 | import { FeaturedProjectsSection } from '@/components/sections/featured-projects';
+  18 | import { TestimonialsSection } from '@/components/sections/testimonials';
+  19 | import { BlogPreviewSection } from '@/components/sections/blog-preview';
+
+The export TechStackSection was not found in module [project]/src/components/sections/tech-stack.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:18:1
+Export TestimonialsSection doesn't exist in target module
+  16 | import { TechStackSection } from '@/components/sections/tech-stack';
+  17 | import { FeaturedProjectsSection } from '@/components/sections/featured-projects';
+> 18 | import { TestimonialsSection } from '@/components/sections/testimonials';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  19 | import { BlogPreviewSection } from '@/components/sections/blog-preview';
+  20 | import { FinalCTA } from '@/components/sections/final-cta';
+  21 |
+
+The export TestimonialsSection was not found in module [project]/src/components/sections/testimonials.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:18:1
+Export TestimonialsSection doesn't exist in target module
+  16 | import { TechStackSection } from '@/components/sections/tech-stack';
+  17 | import { FeaturedProjectsSection } from '@/components/sections/featured-projects';
+> 18 | import { TestimonialsSection } from '@/components/sections/testimonials';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  19 | import { BlogPreviewSection } from '@/components/sections/blog-preview';
+  20 | import { FinalCTA } from '@/components/sections/final-cta';
+  21 |
+
+The export TestimonialsSection was not found in module [project]/src/components/sections/testimonials.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:11:1
+Export TrustStats doesn't exist in target module
+   9 |
+  10 | import { HeroSection } from '@/components/sections/hero';
+> 11 | import { TrustStats } from '@/components/sections/trust-stats';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { ServicesSection } from '@/components/sections/services';
+  13 | import { SolutionsSection } from '@/components/sections/solutions';
+  14 | import { WhyRwextechSection } from '@/components/sections/why-rwextech';
+
+The export TrustStats was not found in module [project]/src/components/sections/trust-stats.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:11:1
+Export TrustStats doesn't exist in target module
+   9 |
+  10 | import { HeroSection } from '@/components/sections/hero';
+> 11 | import { TrustStats } from '@/components/sections/trust-stats';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  12 | import { ServicesSection } from '@/components/sections/services';
+  13 | import { SolutionsSection } from '@/components/sections/solutions';
+  14 | import { WhyRwextechSection } from '@/components/sections/why-rwextech';
+
+The export TrustStats was not found in module [project]/src/components/sections/trust-stats.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:8:1
+Export WhatsAppButton doesn't exist in target module
+   6 | import { Navigation } from '@/components/navigation';
+   7 | import { Footer } from '@/components/footer';
+>  8 | import { WhatsAppButton } from '@/components/whatsapp-button';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 |
+  10 | import { HeroSection } from '@/components/sections/hero';
+  11 | import { TrustStats } from '@/components/sections/trust-stats';
+
+The export WhatsAppButton was not found in module [project]/src/components/whatsapp-button.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:8:1
+Export WhatsAppButton doesn't exist in target module
+   6 | import { Navigation } from '@/components/navigation';
+   7 | import { Footer } from '@/components/footer';
+>  8 | import { WhatsAppButton } from '@/components/whatsapp-button';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 |
+  10 | import { HeroSection } from '@/components/sections/hero';
+  11 | import { TrustStats } from '@/components/sections/trust-stats';
+
+The export WhatsAppButton was not found in module [project]/src/components/whatsapp-button.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:14:1
+Export WhyRwextechSection doesn't exist in target module
+  12 | import { ServicesSection } from '@/components/sections/services';
+  13 | import { SolutionsSection } from '@/components/sections/solutions';
+> 14 | import { WhyRwextechSection } from '@/components/sections/why-rwextech';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  15 | import { DevProcessSection } from '@/components/sections/dev-process';
+  16 | import { TechStackSection } from '@/components/sections/tech-stack';
+  17 | import { FeaturedProjectsSection } from '@/components/sections/featured-projects';
+
+The export WhyRwextechSection was not found in module [project]/src/components/sections/why-rwextech.tsx [app-client] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+
+./src/app/page.tsx:14:1
+Export WhyRwextechSection doesn't exist in target module
+  12 | import { ServicesSection } from '@/components/sections/services';
+  13 | import { SolutionsSection } from '@/components/sections/solutions';
+> 14 | import { WhyRwextechSection } from '@/components/sections/why-rwextech';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  15 | import { DevProcessSection } from '@/components/sections/dev-process';
+  16 | import { TechStackSection } from '@/components/sections/tech-stack';
+  17 | import { FeaturedProjectsSection } from '@/components/sections/featured-projects';
+
+The export WhyRwextechSection was not found in module [project]/src/components/sections/why-rwextech.tsx [app-ssr] (ecmascript).
+Did you mean to import default?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 127.0.0.1:3000...
+* Connected to 127.0.0.1 (127.0.0.1) port 3000
+* using HTTP/1.x
+> GET / HTTP/1.1
+> Host: 127.0.0.1:3000
+> User-Agent: curl/8.14.1
+> Accept: */*
+> 
+* Request completely sent off
+  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0< HTTP/1.1 500 Internal Server Error
+< Cache-Control: no-store, must-revalidate
+< X-Powered-By: Next.js
+< ETag: "fj6s72xuyh65j"
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 7975
+< Vary: Accept-Encoding
+< Date: Mon, 31 Aug 2026 20:45:46 GMT
+< Connection: keep-alive
+< Keep-Alive: timeout=5
+< 
+{ [7975 bytes data]
+<!DOCTYPE html><html><head><meta charSet="utf-8" data-next-head=""/><meta name="viewport" content="width=device-width" data-next-head=""/><style data-next-hide-fouc="true">body{display:none}</style><noscript data-next-hide-fouc="true"><style>body{display:block}</style></noscript><noscript data-n-css=""></noscript><script src="/_next/static/chunks/node_modules_next_dist_compiled_8ca6b690._.js" defer=""></script><script src="/_next/static/chunks/node_modules_next_dist_shared_lib_8bac8163._.js" defer=""></script><script src="/_next/static/chunks/node_modules_next_dist_client_5a8a528e._.js" defer=""></script><script src="/_next/static/chunks/node_modules_next_dist_b3fb3b5f._.js" defer=""></script><script src="/_next/static/chunks/node_modules_next_app_72f3d36f.js" defer=""></script><script src="/_next/static/chunks/%5Bnext%5D_entry_page-loader_ts_742e4b53._.js" defer=""></script><script src="/_next/static/chunks/node_modules_react-dom_4411d9bd._.js" defer=""></script><script src="/_next/static/chunks/node_modules_7f09fef0._.js" defer=""></script><script src="/_next/static/chunks/%5Broot-of-the-server%5D__45f039c3._.js" defer=""></script><script src="/_next/static/chunks/pages__app_2da965e7._.js" defer=""></script><script src="/_next/static/chunks/turbopack-pages__app_0fce199e._.js" defer=""></script><script src="/_next/static/chunks/node_modules_next_dist_shared_lib_9a2a7093._.js" defer=""></script><script src="/_next/static/chunks/node_modules_next_dist_a183fb77._.js" defer=""></script><script src="/_next/static/chunks/node_modules_next_error_1cfbb379.js" defer=""></script><script src="/_next/static/chunks/%5Bnext%5D_entry_page-loader_ts_43b523b5._.js" defer=""></script><script src="/_next/static/chunks/%5Broot-of-the-server%5D__092393de._.js" defer=""></script><script src="/_next/static/chunks/pages__error_2da965e7._.js" defer=""></script><script src="/_next/static/chunks/turbopack-pages__error_af01c4e3._.js" defer=""></script><script src="/_next/static/development/_ssgManifest.js" defer=""></script><script src="/_next/static/development/_buildManifest.js" defer=""></script><noscript id="__next_css__DO_NOT_USE__"></noscript></head><body><div id="__next"></div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"statusCode":500,"hostname":"localhost"}},"page":"/_error","query":{},"buildId":"development","isFallback":false,"err":{"name":"Error","source":"server","message":"./src/app/page.tsx:22:1\nExport AboutPage doesn't exist in target module\n  20 | import { FinalCTA } from '@/components/sections/final-cta';\n  21 |\n\u003e 22 | import { AboutPage } from '@/components/pages/about';\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  23 | import { ProjectsPage } from '@/components/pages/projects';\n  24 | import { ProjectDetailPage } from '@/components/pages/project-detail';\n  25 | import { BlogPage } from '@/components/pages/blog';\n\nThe export AboutPage was not found in module [project]/src/components/pages/about.tsx [app-client] (ecmascript).\nDid you mean to import default?\nAll exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.\n\nImport traces:\n  Client Component Browser:\n    ./src/app/page.tsx [Client Component Browser]\n    ./src/app/page.tsx [Server Component]\n\n  Client Component SSR:\n    ./src/app/page.tsx [Client Component SSR]\n    ./src/app/page.tsx [Server Component]\n\n","stack":"Error: ./src/app/page.tsx:22:1\nExport AboutPage doesn't exist in target module\n\u001b \u001b 20 |\u001b \u001bimport\u001b { \u001bFinalCTA\u001b } \u001bfrom\u001b \u001b'@/components/sections/final-cta'\u001b\u001b;\u001b\n \u001b 21 |\u001b\n\u001b\u001b\u003e\u001b\u001b\u001b 22 |\u001b \u001bimport\u001b { \u001bAboutPage\u001b } \u001bfrom\u001b \u001b'@/components/pages/about'\u001b\u001b;\u001b\n \u001b    |\u001b \u001b\u001b^\u001b\u001b\u001b[3100  7975  100  7975    0     0   1993      0  0:00:04  0:00:03  0:00:01  1993100  7975  100  7975    0     0   1993      0  0:00:04  0:00:03  0:00:01  1993
+* Connection #0 to host 127.0.0.1 left intact
+1m\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\u001b\u001b^\u001b\u001b\n \u001b 23 |\u001b \u001bimport\u001b { \u001bProjectsPage\u001b } \u001bfrom\u001b \u001b'@/components/pages/projects'\u001b\u001b;\u001b\n \u001b 24 |\u001b \u001bimport\u001b { \u001bProjectDetailPage\u001b } \u001bfrom\u001b \u001b'@/components/pages/project-detail'\u001b\u001b;\u001b\n \u001b 25 |\u001b \u001bimport\u001b { \u001bBlogPage\u001b } \u001bfrom\u001b \u001b'@/components/pages/blog'\u001b\u001b;\u001b\u001b\n\nThe export AboutPage was not found in module [project]/src/components/pages/about.tsx [app-client] (ecmascript).\nDid you mean to import default?\nAll exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.\n\nImport traces:\n  Client Component Browser:\n    ./src/app/page.tsx [Client Component Browser]\n    ./src/app/page.tsx [Server Component]\n\n  Client Component SSR:\n    ./src/app/page.tsx [Client Component SSR]\n    ./src/app/page.tsx [Server Component]\n\n\n    at Object.getCompilationErrors (/home/z/my-project/node_modules/next/dist/server/dev/hot-reloader-turbopack.js:1008:59)\n    at DevBundlerService.getCompilationError (/home/z/my-project/node_modules/next/dist/server/lib/dev-bundler-service.js:44:55)\n    at DevServer.getCompilationError (/home/z/my-project/node_modules/next/dist/server/dev/next-dev-server.js:706:42)\n    at DevServer.findPageComponents (/home/z/my-project/node_modules/next/dist/server/dev/next-dev-server.js:676:43)\n    at async DevServer.renderErrorToResponseImpl (/home/z/my-project/node_modules/next/dist/server/base-server.js:1713:26)"},"gip":true,"scriptLoader":[]}</script></body></html>

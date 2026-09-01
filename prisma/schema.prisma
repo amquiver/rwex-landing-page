@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String?
+  name      String?
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  challenge   String?
+  solution    String?
+  results     String?
+  category    String   @default("web")
+  clientName  String?
+  clientUrl   String?
+  technologies String?
+  coverImage  String?
+  isFeatured  Boolean  @default(false)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  images      ProjectImage[]
+}
+
+model ProjectImage {
+  id        String  @id @default(cuid())
+  url       String
+  alt       String?
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  name      String
+  logo      String?
+  website   String?
+  industry  String?
+  isVisible Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  icon        String?
+  highlights  String?
+  ctaText     String?
+  sortOrder   Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Testimonial {
+  id         String   @id @default(cuid())
+  name       String
+  position   String?
+  company    String?
+  content    String
+  photo      String?
+  isPublished Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model BlogPost {
+  id              String         @id @default(cuid())
+  title           String
+  slug            String         @unique
+  excerpt         String?
+  content         String
+  coverImage      String?
+  author          String?
+  readingTime     Int            @default(5)
+  seoTitle        String?
+  seoDescription  String?
+  status          String         @default("draft")
+  isFeatured      Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  categories      BlogCategory[]
+  tags            BlogPostTag[]
+}
+
+model BlogCategory {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  slug      String     @unique
+  posts     BlogPost[]
+  createdAt DateTime   @default(now())
+}
+
+model BlogTag {
+  id    String         @id @default(cuid())
+  name  String         @unique
+  slug  String         @unique
+  posts BlogPostTag[]
+}
+
+model BlogPostTag {
+  postId String
+  tagId  String
+  post   BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+}
+
+model ContactInquiry {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  phone      String?
+  company    String?
+  service    String?
+  budget     String?
+  message    String
+  status     String   @default("new")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model SiteSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}

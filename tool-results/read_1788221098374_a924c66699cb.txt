@@ -1,0 +1,2002 @@
+     1→'use client';
+     2→
+     3→import React, { useState, useEffect, useCallback, useRef, useSyncExternalStore } from 'react';
+     4→import { useRouter } from 'next/navigation';
+     5→import { toast } from 'sonner';
+     6→import {
+     7→  LayoutDashboard, FolderOpen, FileText, Quote, Users, Wrench, Mail, Settings,
+     8→  Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Menu, ArrowLeft, Search, Upload,
+     9→  Loader2, ChevronLeft, ChevronRight, MoreHorizontal, X, Check, ExternalLink,
+    10→  Building2, Globe, Monitor, Smartphone, Palette, Send, Phone, MapPin, Instagram,
+    11→  Linkedin, Github, Facebook, MessageSquare, Star, Clock, User, Briefcase,
+    12→} from 'lucide-react';
+    13→import { Button } from '@/components/ui/button';
+    14→import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+    15→import { Badge } from '@/components/ui/badge';
+    16→import { Input } from '@/components/ui/input';
+    17→import { Textarea } from '@/components/ui/textarea';
+    18→import { Label } from '@/components/ui/label';
+    19→import {
+    20→  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+    21→} from '@/components/ui/select';
+    22→import { Separator } from '@/components/ui/separator';
+    23→import {
+    24→  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+    25→} from '@/components/ui/dialog';
+    26→import {
+    27→  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+    28→} from '@/components/ui/table';
+    29→import { Skeleton } from '@/components/ui/skeleton';
+    30→import { ScrollArea } from '@/components/ui/scroll-area';
+    31→import { Switch } from '@/components/ui/switch';
+    32→import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
+    33→import {
+    34→  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+    35→} from '@/components/ui/dropdown-menu';
+    36→
+    37→// ==================== TYPES ====================
+    38→
+    39→type Section = 'overview' | 'projects' | 'blog' | 'testimonials' | 'clients' | 'services' | 'contact' | 'settings';
+    40→
+    41→interface NavItem {
+    42→  id: Section;
+    43→  label: string;
+    44→  icon: React.ElementType;
+    45→}
+    46→
+    47→interface Project {
+    48→  id: string;
+    49→  title: string;
+    50→  slug: string;
+    51→  description: string;
+    52→  challenge: string;
+    53→  solution: string;
+    54→  results: string;
+    55→  category: string;
+    56→  clientName: string;
+    57→  clientUrl: string;
+    58→  technologies: string;
+    59→  coverImage: string;
+    60→  isFeatured: boolean;
+    61→  isPublished: boolean;
+    62→  createdAt: string;
+    63→}
+    64→
+    65→interface BlogPost {
+    66→  id: string;
+    67→  title: string;
+    68→  slug: string;
+    69→  excerpt: string;
+    70→  content: string;
+    71→  author: string;
+    72→  readingTime: number;
+    73→  coverImage: string;
+    74→  status: string;
+    75→  isFeatured: boolean;
+    76→  seoTitle: string;
+    77→  seoDescription: string;
+    78→  createdAt: string;
+    79→}
+    80→
+    81→interface Testimonial {
+    82→  id: string;
+    83→  name: string;
+    84→  position: string;
+    85→  company: string;
+    86→  content: string;
+    87→  photo: string;
+    88→  isPublished: boolean;
+    89→  createdAt: string;
+    90→}
+    91→
+    92→interface Client {
+    93→  id: string;
+    94→  name: string;
+    95→  logo: string;
+    96→  website: string;
+    97→  industry: string;
+    98→  isVisible: boolean;
+    99→  createdAt: string;
+   100→}
+   101→
+   102→interface Service {
+   103→  id: string;
+   104→  title: string;
+   105→  slug: string;
+   106→  description: string;
+   107→  icon: string;
+   108→  highlights: string[];
+   109→  ctaText: string;
+   110→  sortOrder: number;
+   111→  isPublished: boolean;
+   112→  createdAt: string;
+   113→}
+   114→
+   115→interface ContactInquiry {
+   116→  id: string;
+   117→  name: string;
+   118→  email: string;
+   119→  phone: string;
+   120→  company: string;
+   121→  service: string;
+   122→  budget: string;
+   123→  message: string;
+   124→  status: string;
+   125→  createdAt: string;
+   126→}
+   127→
+   128→interface SiteSettings {
+   129→  company_name: string;
+   130→  email: string;
+   131→  phone: string;
+   132→  whatsapp: string;
+   133→  address: string;
+   134→  instagram: string;
+   135→  linkedin: string;
+   136→  github: string;
+   137→  facebook: string;
+   138→  footer_text: string;
+   139→}
+   140→
+   141→interface OverviewStats {
+   142→  totalProjects: number;
+   143→  publishedPosts: number;
+   144→  newInquiries: number;
+   145→  totalClients: number;
+   146→}
+   147→
+   148→// ==================== HELPERS ====================
+   149→
+   150→function generateSlug(text: string): string {
+   151→  return text
+   152→    .toLowerCase()
+   153→    .replace(/[^a-z0-9]+/g, '-')
+   154→    .replace(/(^-|-$)/g, '');
+   155→}
+   156→
+   157→function formatDate(dateStr: string): string {
+   158→  const d = new Date(dateStr);
+   159→  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+   160→}
+   161→
+   162→function truncate(str: string, len: number): string {
+   163→  if (!str) return '';
+   164→  return str.length > len ? str.substring(0, len) + '...' : str;
+   165→}
+   166→
+   167→// ==================== API HELPER ====================
+   168→
+   169→async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
+   170→  const res = await fetch(url, options);
+   171→  if (!res.ok) {
+   172→    const data = await res.json().catch(() => ({ error: 'Request failed' }));
+   173→    throw new Error(data.error || `HTTP ${res.status}`);
+   174→  }
+   175→  const json = await res.json();
+   176→  // Unwrap pagination so admin code can access data.total directly
+   177→  if (json.pagination) {
+   178→    return { ...json, ...json.pagination } as T;
+   179→  }
+   180→  return json as T;
+   181→}
+   182→
+   183→async function uploadFile(file: File): Promise<string> {
+   184→  const formData = new FormData();
+   185→  formData.append('file', file);
+   186→  const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
+   187→  if (!res.ok) throw new Error('Upload failed');
+   188→  const data = await res.json();
+   189→  return data.url;
+   190→}
+   191→
+   192→// ==================== NAV ITEMS ====================
+   193→
+   194→const NAV_ITEMS: NavItem[] = [
+   195→  { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+   196→  { id: 'projects', label: 'Projects', icon: FolderOpen },
+   197→  { id: 'blog', label: 'Blog', icon: FileText },
+   198→  { id: 'testimonials', label: 'Testimonials', icon: Quote },
+   199→  { id: 'clients', label: 'Clients', icon: Users },
+   200→  { id: 'services', label: 'Services', icon: Wrench },
+   201→  { id: 'contact', label: 'Contact Inquiries', icon: Mail },
+   202→  { id: 'settings', label: 'Settings', icon: Settings },
+   203→];
+   204→
+   205→const STATUS_COLORS: Record<string, string> = {
+   206→  new: 'bg-blue-100 text-blue-800',
+   207→  contacted: 'bg-yellow-100 text-yellow-800',
+   208→  'in-progress': 'bg-orange-100 text-orange-800',
+   209→  converted: 'bg-green-100 text-green-800',
+   210→  closed: 'bg-gray-100 text-gray-800',
+   211→};
+   212→
+   213→const CATEGORY_LABELS: Record<string, string> = {
+   214→  web: 'Web App',
+   215→  mobile: 'Mobile App',
+   216→  'business-systems': 'Business Systems',
+   217→  'ui-ux': 'UI/UX Design',
+   218→};
+   219→
+   220→const CATEGORIES = ['web', 'mobile', 'business-systems', 'ui-ux'];
+   221→
+   222→const INQUIRY_STATUSES = ['new', 'contacted', 'in-progress', 'converted', 'closed'];
+   223→
+   224→const SETTINGS_KEYS: { key: keyof SiteSettings; label: string; icon: React.ElementType }[] = [
+   225→  { key: 'company_name', label: 'Company Name', icon: Building2 },
+   226→  { key: 'email', label: 'Email', icon: Mail },
+   227→  { key: 'phone', label: 'Phone', icon: Phone },
+   228→  { key: 'whatsapp', label: 'WhatsApp', icon: MessageSquare },
+   229→  { key: 'address', label: 'Address', icon: MapPin },
+   230→  { key: 'instagram', label: 'Instagram', icon: Instagram },
+   231→  { key: 'linkedin', label: 'LinkedIn', icon: Linkedin },
+   232→  { key: 'github', label: 'GitHub', icon: Github },
+   233→  { key: 'facebook', label: 'Facebook', icon: Facebook },
+   234→  { key: 'footer_text', label: 'Footer Text', icon: FileText },
+   235→];
+   236→
+   237→// ==================== LOGIN SCREEN ====================
+   238→
+   239→function LoginScreen({ onLogin }: { onLogin: (email: string) => void }) {
+   240→  const [email, setEmail] = useState('');
+   241→  const [loading, setLoading] = useState(false);
+   242→
+   243→  const handleSubmit = async (e: React.FormEvent) => {
+   244→    e.preventDefault();
+   245→    if (!email.trim()) return;
+   246→    setLoading(true);
+   247→    try {
+   248→      await apiFetch<{ user: { id: string; email: string } }>('/api/admin/auth', {
+   249→        method: 'POST',
+   250→        headers: { 'Content-Type': 'application/json' },
+   251→        body: JSON.stringify({ email: email.trim() }),
+   252→      });
+   253→      onLogin(email.trim());
+   254→    } catch (err) {
+   255→      toast.error(err instanceof Error ? err.message : 'Authentication failed');
+   256→    } finally {
+   257→      setLoading(false);
+   258→    }
+   259→  };
+   260→
+   261→  return (
+   262→    <div className="min-h-screen flex items-center justify-center bg-navy p-4">
+   263→      <div className="w-full max-w-md">
+   264→        <div className="text-center mb-8">
+   265→          <h1 className="text-4xl font-bold text-white mb-2">
+   266→            RWEX<span className="text-gold">TECH</span>
+   267→          </h1>
+   268→          <p className="text-muted">Admin Dashboard</p>
+   269→        </div>
+   270→        <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
+   271→          <CardContent className="p-6">
+   272→            <form onSubmit={handleSubmit} className="space-y-4">
+   273→              <div className="space-y-2">
+   274→                <Label htmlFor="admin-email" className="text-white/80">Email Address</Label>
+   275→                <Input
+   276→                  id="admin-email"
+   277→                  type="email"
+   278→                  placeholder="admin@rwextech.com"
+   279→                  value={email}
+   280→                  onChange={(e) => setEmail(e.target.value)}
+   281→                  className="bg-white/10 border-white/20 text-white placeholder:text-muted focus-visible:ring-gold"
+   282→                  required
+   283→                />
+   284→              </div>
+   285→              <Button
+   286→                type="submit"
+   287→                disabled={loading || !email.trim()}
+   288→                className="w-full bg-gold hover:bg-gold/90 text-navy font-semibold h-11"
+   289→              >
+   290→                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+   291→                Access Dashboard
+   292→              </Button>
+   293→            </form>
+   294→          </CardContent>
+   295→        </Card>
+   296→      </div>
+   297→    </div>
+   298→  );
+   299→}
+   300→
+   301→// ==================== SIDEBAR NAV ====================
+   302→
+   303→function SidebarNav({
+   304→  activeSection,
+   305→  onNavigate,
+   306→  onLogout,
+   307→  onBack,
+   308→}: {
+   309→  activeSection: Section;
+   310→  onNavigate: (s: Section) => void;
+   311→  onLogout: () => void;
+   312→  onBack: () => void;
+   313→}) {
+   314→  return (
+   315→    <div className="flex flex-col h-full bg-navy text-white">
+   316→      <div className="p-4">
+   317→        <h2 className="text-xl font-bold">
+   318→          RWEX<span className="text-gold">TECH</span>
+   319→        </h2>
+   320→        <p className="text-xs text-muted mt-0.5">Admin Panel</p>
+   321→      </div>
+   322→      <Separator className="bg-white/10" />
+   323→      <ScrollArea className="flex-1 py-2">
+   324→        <nav className="space-y-0.5 px-2">
+   325→          {NAV_ITEMS.map((item) => {
+   326→            const Icon = item.icon;
+   327→            const isActive = activeSection === item.id;
+   328→            return (
+   329→              <button
+   330→                key={item.id}
+   331→                onClick={() => onNavigate(item.id)}
+   332→                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left ${
+   333→                  isActive
+   334→                    ? 'bg-gold/15 text-gold'
+   335→                    : 'text-white/70 hover:bg-white/5 hover:text-white'
+   336→                }`}
+   337→              >
+   338→                <Icon className="size-4 shrink-0" />
+   339→                <span>{item.label}</span>
+   340→              </button>
+   341→            );
+   342→          })}
+   343→        </nav>
+   344→      </ScrollArea>
+   345→      <Separator className="bg-white/10" />
+   346→      <div className="p-2 space-y-0.5">
+   347→        <button
+   348→          onClick={onBack}
+   349→          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors text-left"
+   350→        >
+   351→          <ExternalLink className="size-4" />
+   352→          <span>Back to Website</span>
+   353→        </button>
+   354→        <button
+   355→          onClick={onLogout}
+   356→          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors text-left"
+   357→        >
+   358→          <LogOut className="size-4" />
+   359→          <span>Logout</span>
+   360→        </button>
+   361→      </div>
+   362→    </div>
+   363→  );
+   364→}
+   365→
+   366→// ==================== OVERVIEW SECTION ====================
+   367→
+   368→function OverviewSection({ onNavigate }: { onNavigate: (s: Section) => void }) {
+   369→  const [stats, setStats] = useState<OverviewStats | null>(null);
+   370→  const [recentInquiries, setRecentInquiries] = useState<ContactInquiry[]>([]);
+   371→  const [loading, setLoading] = useState(true);
+   372→
+   373→  const loadData = useCallback(async () => {
+   374→    setLoading(true);
+   375→    try {
+   376→      const [projectsData, blogData, inquiriesData, clientsData] = await Promise.all([
+   377→        apiFetch<{ data: Project[]; total: number }>('/api/admin/projects?limit=1').catch(() => ({ data: [], total: 0 })),
+   378→        apiFetch<{ data: BlogPost[]; total: number }>('/api/admin/blog?limit=1&status=published').catch(() => ({ data: [], total: 0 })),
+   379→        apiFetch<{ data: ContactInquiry[]; total: number }>('/api/admin/contact?limit=1&status=new').catch(() => ({ data: [], total: 0 })),
+   380→        apiFetch<{ data: Client[]; total: number }>('/api/admin/clients?limit=1').catch(() => ({ data: [], total: 0 })),
+   381→      ]);
+   382→      setStats({
+   383→        totalProjects: projectsData.total,
+   384→        publishedPosts: blogData.total,
+   385→        newInquiries: inquiriesData.total,
+   386→        totalClients: clientsData.total,
+   387→      });
+   388→      const recentData = await apiFetch<{ data: ContactInquiry[]; total: number }>('/api/admin/contact?limit=5').catch(() => ({ data: [], total: 0 }));
+   389→      setRecentInquiries(recentData.data);
+   390→    } catch {
+   391→      toast.error('Failed to load dashboard data');
+   392→    } finally {
+   393→      setLoading(false);
+   394→    }
+   395→  }, []);
+   396→
+   397→  useEffect(() => {
+   398→    loadData();
+   399→  }, [loadData]);
+   400→
+   401→  const statCards = [
+   402→    { label: 'Total Projects', value: stats?.totalProjects ?? 0, icon: FolderOpen, nav: 'projects' as Section },
+   403→    { label: 'Published Posts', value: stats?.publishedPosts ?? 0, icon: FileText, nav: 'blog' as Section },
+   404→    { label: 'New Inquiries', value: stats?.newInquiries ?? 0, icon: Mail, nav: 'contact' as Section },
+   405→    { label: 'Total Clients', value: stats?.totalClients ?? 0, icon: Users, nav: 'clients' as Section },
+   406→  ];
+   407→
+   408→  return (
+   409→    <div className="space-y-6">
+   410→      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+   411→        <div>
+   412→          <h1 className="text-2xl font-bold text-navy">Dashboard Overview</h1>
+   413→          <p className="text-muted text-sm mt-1">Welcome back! Here is what is happening.</p>
+   414→        </div>
+   415→        <Button onClick={loadData} variant="outline" size="sm" className="gap-2">
+   416→          <Clock className="size-4" /> Refresh
+   417→        </Button>
+   418→      </div>
+   419→
+   420→      {loading ? (
+   421→        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+   422→          {Array.from({ length: 4 }).map((_, i) => (
+   423→            <Skeleton key={i} className="h-28 rounded-xl" />
+   424→          ))}
+   425→        </div>
+   426→      ) : (
+   427→        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+   428→          {statCards.map((card) => {
+   429→            const Icon = card.icon;
+   430→            return (
+   431→              <Card
+   432→                key={card.label}
+   433→                className="cursor-pointer hover:shadow-md transition-shadow border-transparent"
+   434→                onClick={() => onNavigate(card.nav)}
+   435→              >
+   436→                <CardContent className="p-5">
+   437→                  <div className="flex items-center justify-between">
+   438→                    <div>
+   439→                      <p className="text-sm text-muted font-medium">{card.label}</p>
+   440→                      <p className="text-3xl font-bold text-gold mt-1">{card.value}</p>
+   441→                    </div>
+   442→                    <div className="size-12 rounded-xl bg-navy/5 flex items-center justify-center">
+   443→                      <Icon className="size-6 text-navy" />
+   444→                    </div>
+   445→                  </div>
+   446→                </CardContent>
+   447→              </Card>
+   448→            );
+   449→          })}
+   450→        </div>
+   451→      )}
+   452→
+   453→      <Card>
+   454→        <CardHeader className="pb-3">
+   455→          <CardTitle className="text-navy text-lg">Recent Inquiries</CardTitle>
+   456→        </CardHeader>
+   457→        <CardContent>
+   458→          {loading ? (
+   459→            <div className="space-y-3">
+   460→              {Array.from({ length: 3 }).map((_, i) => (
+   461→                <Skeleton key={i} className="h-12 w-full" />
+   462→              ))}
+   463→            </div>
+   464→          ) : recentInquiries.length === 0 ? (
+   465→            <p className="text-muted text-sm py-8 text-center">No inquiries yet</p>
+   466→          ) : (
+   467→            <div className="overflow-x-auto">
+   468→              <Table>
+   469→                <TableHeader>
+   470→                  <TableRow>
+   471→                    <TableHead>Name</TableHead>
+   472→                    <TableHead>Email</TableHead>
+   473→                    <TableHead>Service</TableHead>
+   474→                    <TableHead>Status</TableHead>
+   475→                    <TableHead>Date</TableHead>
+   476→                  </TableRow>
+   477→                </TableHeader>
+   478→                <TableBody>
+   479→                  {recentInquiries.map((inq) => (
+   480→                    <TableRow key={inq.id}>
+   481→                      <TableCell className="font-medium">{inq.name}</TableCell>
+   482→                      <TableCell className="text-muted">{inq.email}</TableCell>
+   483→                      <TableCell>{inq.service || '—'}</TableCell>
+   484→                      <TableCell>
+   485→                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[inq.status] || 'bg-gray-100 text-gray-800'}`}>
+   486→                          {inq.status}
+   487→                        </span>
+   488→                      </TableCell>
+   489→                      <TableCell className="text-muted text-sm">{formatDate(inq.createdAt)}</TableCell>
+   490→                    </TableRow>
+   491→                  ))}
+   492→                </TableBody>
+   493→              </Table>
+   494→            </div>
+   495→          )}
+   496→        </CardContent>
+   497→      </Card>
+   498→
+   499→      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+   500→        {NAV_ITEMS.filter((i) => i.id !== 'overview').slice(0, 4).map((item) => {
+   501→          const Icon = item.icon;
+   502→          return (
+   503→            <Button
+   504→              key={item.id}
+   505→              variant="outline"
+   506→              className="h-auto py-4 flex flex-col gap-2 border-dashed hover:border-gold hover:bg-gold/5 transition-colors"
+   507→              onClick={() => onNavigate(item.id)}
+   508→            >
+   509→              <Icon className="size-5 text-navy" />
+   510→              <span className="text-xs font-medium">{item.label}</span>
+   511→            </Button>
+   512→          );
+   513→        })}
+   514→      </div>
+   515→    </div>
+   516→  );
+   517→}
+   518→
+   519→// ==================== PROJECTS SECTION ====================
+   520→
+   521→const DEFAULT_PROJECT: Omit<Project, 'id' | 'createdAt'> = {
+   522→  title: '', slug: '', description: '', challenge: '', solution: '', results: '',
+   523→  category: 'web', clientName: '', clientUrl: '', technologies: '',
+   524→  coverImage: '', isFeatured: false, isPublished: false,
+   525→};
+   526→
+   527→function ProjectsSection() {
+   528→  const [projects, setProjects] = useState<Project[]>([]);
+   529→  const [loading, setLoading] = useState(true);
+   530→  const [page, setPage] = useState(1);
+   531→  const [totalPages, setTotalPages] = useState(1);
+   532→  const [search, setSearch] = useState('');
+   533→  const [dialogOpen, setDialogOpen] = useState(false);
+   534→  const [deleteOpen, setDeleteOpen] = useState(false);
+   535→  const [editingId, setEditingId] = useState<string | null>(null);
+   536→  const [deleteId, setDeleteId] = useState<string | null>(null);
+   537→  const [form, setForm] = useState(DEFAULT_PROJECT);
+   538→  const [saving, setSaving] = useState(false);
+   539→  const [uploading, setUploading] = useState(false);
+   540→  const fileInputRef = useRef<HTMLInputElement>(null);
+   541→
+   542→  const loadProjects = useCallback(async () => {
+   543→    setLoading(true);
+   544→    try {
+   545→      const params = new URLSearchParams({ page: String(page), limit: '10' });
+   546→      if (search) params.set('search', search);
+   547→      const data = await apiFetch<{ data: Project[]; total: number; page: number; limit: number }>(`/api/admin/projects?${params}`);
+   548→      setProjects(data.data);
+   549→      setTotalPages(Math.max(1, Math.ceil(data.total / data.limit)));
+   550→    } catch {
+   551→      toast.error('Failed to load projects');
+   552→    } finally {
+   553→      setLoading(false);
+   554→    }
+   555→  }, [page, search]);
+   556→
+   557→  useEffect(() => { loadProjects(); }, [loadProjects]);
+   558→
+   559→  const handleOpenCreate = () => {
+   560→    setEditingId(null);
+   561→    setForm(DEFAULT_PROJECT);
+   562→    setDialogOpen(true);
+   563→  };
+   564→
+   565→  const handleOpenEdit = (p: Project) => {
+   566→    setEditingId(p.id);
+   567→    setForm({
+   568→      title: p.title, slug: p.slug, description: p.description || '',
+   569→      challenge: p.challenge || '', solution: p.solution || '', results: p.results || '',
+   570→      category: p.category, clientName: p.clientName || '', clientUrl: p.clientUrl || '',
+   571→      technologies: p.technologies || '', coverImage: p.coverImage || '',
+   572→      isFeatured: p.isFeatured, isPublished: p.isPublished,
+   573→    });
+   574→    setDialogOpen(true);
+   575→  };
+   576→
+   577→  const handleSave = async () => {
+   578→    if (!form.title.trim()) { toast.error('Title is required'); return; }
+   579→    setSaving(true);
+   580→    try {
+   581→      const payload = { ...form, slug: form.slug || generateSlug(form.title) };
+   582→      if (editingId) {
+   583→        await apiFetch(`/api/admin/projects/${editingId}`, {
+   584→          method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+   585→        });
+   586→        toast.success('Project updated!');
+   587→      } else {
+   588→        await apiFetch('/api/admin/projects', {
+   589→          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+   590→        });
+   591→        toast.success('Project created!');
+   592→      }
+   593→      setDialogOpen(false);
+   594→      loadProjects();
+   595→    } catch (err) {
+   596→      toast.error(err instanceof Error ? err.message : 'Save failed');
+   597→    } finally {
+   598→      setSaving(false);
+   599→    }
+   600→  };
+   601→
+   602→  const handleDelete = async () => {
+   603→    if (!deleteId) return;
+   604→    try {
+   605→      await apiFetch(`/api/admin/projects/${deleteId}`, { method: 'DELETE' });
+   606→      toast.success('Project deleted');
+   607→      setDeleteOpen(false);
+   608→      setDeleteId(null);
+   609→      loadProjects();
+   610→    } catch {
+   611→      toast.error('Delete failed');
+   612→    }
+   613→  };
+   614→
+   615→  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+   616→    const file = e.target.files?.[0];
+   617→    if (!file) return;
+   618→    setUploading(true);
+   619→    try {
+   620→      const url = await uploadFile(file);
+   621→      setForm((f) => ({ ...f, coverImage: url }));
+   622→      toast.success('Image uploaded!');
+   623→    } catch {
+   624→      toast.error('Upload failed');
+   625→    } finally {
+   626→      setUploading(false);
+   627→      if (fileInputRef.current) fileInputRef.current.value = '';
+   628→    }
+   629→  };
+   630→
+   631→  const updateField = <K extends keyof typeof form>(key: K, value: typeof form[K]) => {
+   632→    setForm((f) => {
+   633→      const updated = { ...f, [key]: value };
+   634→      if (key === 'title' && !editingId) {
+   635→        updated.slug = generateSlug(value as string);
+   636→      }
+   637→      return updated;
+   638→    });
+   639→  };
+   640→
+   641→  return (
+   642→    <div className="space-y-4">
+   643→      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+   644→        <h1 className="text-2xl font-bold text-navy">Projects</h1>
+   645→        <div className="flex gap-2">
+   646→          <div className="relative">
+   647→            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" />
+   648→            <Input placeholder="Search projects..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9 w-64" />
+   649→          </div>
+   650→          <Button onClick={handleOpenCreate} className="bg-gold hover:bg-gold/90 text-navy font-semibold gap-2">
+   651→            <Plus className="size-4" /> Add Project
+   652→          </Button>
+   653→        </div>
+   654→      </div>
+   655→
+   656→      <Card>
+   657→        <CardContent className="p-0">
+   658→          {loading ? (
+   659→            <div className="p-4 space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>
+   660→          ) : (
+   661→            <div className="overflow-x-auto">
+   662→              <Table>
+   663→                <TableHeader>
+   664→                  <TableRow>
+   665→                    <TableHead>Title</TableHead>
+   666→                    <TableHead className="hidden md:table-cell">Category</TableHead>
+   667→                    <TableHead className="hidden lg:table-cell">Client</TableHead>
+   668→                    <TableHead className="hidden sm:table-cell">Featured</TableHead>
+   669→                    <TableHead>Published</TableHead>
+   670→                    <TableHead className="hidden sm:table-cell">Date</TableHead>
+   671→                    <TableHead className="text-right">Actions</TableHead>
+   672→                  </TableRow>
+   673→                </TableHeader>
+   674→                <TableBody>
+   675→                  {projects.length === 0 ? (
+   676→                    <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted">No projects found</TableCell></TableRow>
+   677→                  ) : projects.map((p) => (
+   678→                    <TableRow key={p.id}>
+   679→                      <TableCell className="font-medium">{p.title}</TableCell>
+   680→                      <TableCell className="hidden md:table-cell"><Badge variant="outline">{CATEGORY_LABELS[p.category] || p.category}</Badge></TableCell>
+   681→                      <TableCell className="hidden lg:table-cell text-muted">{p.clientName || '—'}</TableCell>
+   682→                      <TableCell className="hidden sm:table-cell">
+   683→                        {p.isFeatured ? <Badge className="bg-gold text-navy">Featured</Badge> : <span className="text-muted text-sm">—</span>}
+   684→                      </TableCell>
+   685→                      <TableCell>
+   686→                        <Badge variant={p.isPublished ? 'default' : 'secondary'} className={p.isPublished ? 'bg-green-100 text-green-800' : ''}>
+   687→                          {p.isPublished ? 'Published' : 'Draft'}
+   688→                        </Badge>
+   689→                      </TableCell>
+   690→                      <TableCell className="hidden sm:table-cell text-muted text-sm">{formatDate(p.createdAt)}</TableCell>
+   691→                      <TableCell className="text-right">
+   692→                        <DropdownMenu>
+   693→                          <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="size-8"><MoreHorizontal className="size-4" /></Button></DropdownMenuTrigger>
+   694→                          <DropdownMenuContent align="end">
+   695→                            <DropdownMenuItem onClick={() => handleOpenEdit(p)}><Pencil className="size-4 mr-2" /> Edit</DropdownMenuItem>
+   696→                            <DropdownMenuItem onClick={() => { setDeleteId(p.id); setDeleteOpen(true); }} variant="destructive"><Trash2 className="size-4 mr-2" /> Delete</DropdownMenuItem>
+   697→                          </DropdownMenuContent>
+   698→                        </DropdownMenu>
+   699→                      </TableCell>
+   700→                    </TableRow>
+   701→                  ))}
+   702→                </TableBody>
+   703→              </Table>
+   704→            </div>
+   705→          )}
+   706→        </CardContent>
+   707→      </Card>
+   708→
+   709→      {totalPages > 1 && (
+   710→        <div className="flex items-center justify-center gap-2">
+   711→          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}><ChevronLeft className="size-4" /></Button>
+   712→          <span className="text-sm text-muted">Page {page} of {totalPages}</span>
+   713→          <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}><ChevronRight className="size-4" /></Button>
+   714→        </div>
+   715→      )}
+   716→
+   717→      {/* Create/Edit Dialog */}
+   718→      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+   719→        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+   720→          <DialogHeader>
+   721→            <DialogTitle className="text-navy">{editingId ? 'Edit Project' : 'Add Project'}</DialogTitle>
+   722→            <DialogDescription>Fill in the project details below.</DialogDescription>
+   723→          </DialogHeader>
+   724→          <div className="grid gap-4 py-2">
+   725→            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   726→              <div className="space-y-2">
+   727→                <Label>Title *</Label>
+   728→                <Input value={form.title} onChange={(e) => updateField('title', e.target.value)} placeholder="Project title" />
+   729→              </div>
+   730→              <div className="space-y-2">
+   731→                <Label>Slug</Label>
+   732→                <Input value={form.slug} onChange={(e) => updateField('slug', e.target.value)} placeholder="auto-generated-slug" />
+   733→              </div>
+   734→            </div>
+   735→            <div className="space-y-2">
+   736→              <Label>Description</Label>
+   737→              <Textarea value={form.description} onChange={(e) => updateField('description', e.target.value)} placeholder="Brief description" rows={3} />
+   738→            </div>
+   739→            <div className="space-y-2">
+   740→              <Label>Challenge</Label>
+   741→              <Textarea value={form.challenge} onChange={(e) => updateField('challenge', e.target.value)} placeholder="The challenge faced" rows={3} />
+   742→            </div>
+   743→            <div className="space-y-2">
+   744→              <Label>Solution</Label>
+   745→              <Textarea value={form.solution} onChange={(e) => updateField('solution', e.target.value)} placeholder="The solution provided" rows={3} />
+   746→            </div>
+   747→            <div className="space-y-2">
+   748→              <Label>Results</Label>
+   749→              <Textarea value={form.results} onChange={(e) => updateField('results', e.target.value)} placeholder="Results achieved" rows={3} />
+   750→            </div>
+   751→            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   752→              <div className="space-y-2">
+   753→                <Label>Category</Label>
+   754→                <Select value={form.category} onValueChange={(v) => updateField('category', v)}>
+   755→                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+   756→                  <SelectContent>
+   757→                    {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{CATEGORY_LABELS[c]}</SelectItem>)}
+   758→                  </SelectContent>
+   759→                </Select>
+   760→              </div>
+   761→              <div className="space-y-2">
+   762→                <Label>Technologies</Label>
+   763→                <Input value={form.technologies} onChange={(e) => updateField('technologies', e.target.value)} placeholder="React, Node.js, ..." />
+   764→              </div>
+   765→            </div>
+   766→            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   767→              <div className="space-y-2">
+   768→                <Label>Client Name</Label>
+   769→                <Input value={form.clientName} onChange={(e) => updateField('clientName', e.target.value)} placeholder="Client company" />
+   770→              </div>
+   771→              <div className="space-y-2">
+   772→                <Label>Client URL</Label>
+   773→                <Input value={form.clientUrl} onChange={(e) => updateField('clientUrl', e.target.value)} placeholder="https://..." />
+   774→              </div>
+   775→            </div>
+   776→            <div className="space-y-2">
+   777→              <Label>Cover Image</Label>
+   778→              <div className="flex gap-2">
+   779→                <Input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="flex-1" />
+   780→                {uploading && <Loader2 className="size-5 animate-spin text-muted self-center" />}
+   781→              </div>
+   782→              {form.coverImage && (
+   783→                <div className="relative w-32 h-20 rounded-lg overflow-hidden border mt-2">
+   784→                  <img src={form.coverImage} alt="Cover" className="w-full h-full object-cover" />
+   785→                  <button onClick={() => updateField('coverImage', '')} className="absolute top-1 right-1 size-5 bg-black/60 rounded-full flex items-center justify-center">
+   786→                    <X className="size-3 text-white" />
+   787→                  </button>
+   788→                </div>
+   789→              )}
+   790→            </div>
+   791→            <div className="flex items-center gap-6">
+   792→              <div className="flex items-center gap-2">
+   793→                <Switch checked={form.isFeatured} onCheckedChange={(v) => updateField('isFeatured', v)} />
+   794→                <Label>Featured</Label>
+   795→              </div>
+   796→              <div className="flex items-center gap-2">
+   797→                <Switch checked={form.isPublished} onCheckedChange={(v) => updateField('isPublished', v)} />
+   798→                <Label>Published</Label>
+   799→              </div>
+   800→            </div>
+   801→          </div>
+   802→          <DialogFooter>
+   803→            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+   804→            <Button onClick={handleSave} disabled={saving} className="bg-gold hover:bg-gold/90 text-navy font-semibold">
+   805→              {saving && <Loader2 className="mr-2 size-4 animate-spin" />}{editingId ? 'Update' : 'Create'}
+   806→            </Button>
+   807→          </DialogFooter>
+   808→        </DialogContent>
+   809→      </Dialog>
+   810→
+   811→      {/* Delete Dialog */}
+   812→      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+   813→        <DialogContent className="sm:max-w-md">
+   814→          <DialogHeader>
+   815→            <DialogTitle className="text-navy">Delete Project</DialogTitle>
+   816→            <DialogDescription>Are you sure? This action cannot be undone.</DialogDescription>
+   817→          </DialogHeader>
+   818→          <DialogFooter>
+   819→            <Button variant="outline" onClick={() => setDeleteOpen(false)}>Cancel</Button>
+   820→            <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+   821→          </DialogFooter>
+   822→        </DialogContent>
+   823→      </Dialog>
+   824→    </div>
+   825→  );
+   826→}
+   827→
+   828→// ==================== BLOG SECTION ====================
+   829→
+   830→const DEFAULT_BLOG: Omit<BlogPost, 'id' | 'createdAt'> = {
+   831→  title: '', slug: '', excerpt: '', content: '', author: '', readingTime: 5,
+   832→  coverImage: '', status: 'draft', isFeatured: false, seoTitle: '', seoDescription: '',
+   833→};
+   834→
+   835→function BlogSection() {
+   836→  const [posts, setPosts] = useState<BlogPost[]>([]);
+   837→  const [loading, setLoading] = useState(true);
+   838→  const [page, setPage] = useState(1);
+   839→  const [totalPages, setTotalPages] = useState(1);
+   840→  const [search, setSearch] = useState('');
+   841→  const [statusFilter, setStatusFilter] = useState<string>('all');
+   842→  const [dialogOpen, setDialogOpen] = useState(false);
+   843→  const [deleteOpen, setDeleteOpen] = useState(false);
+   844→  const [editingId, setEditingId] = useState<string | null>(null);
+   845→  const [deleteId, setDeleteId] = useState<string | null>(null);
+   846→  const [form, setForm] = useState(DEFAULT_BLOG);
+   847→  const [saving, setSaving] = useState(false);
+   848→  const [uploading, setUploading] = useState(false);
+   849→  const fileInputRef = useRef<HTMLInputElement>(null);
+   850→
+   851→  const loadPosts = useCallback(async () => {
+   852→    setLoading(true);
+   853→    try {
+   854→      const params = new URLSearchParams({ page: String(page), limit: '10' });
+   855→      if (search) params.set('search', search);
+   856→      if (statusFilter && statusFilter !== 'all') params.set('status', statusFilter);
+   857→      const data = await apiFetch<{ data: BlogPost[]; total: number; page: number; limit: number }>(`/api/admin/blog?${params}`);
+   858→      setPosts(data.data);
+   859→      setTotalPages(Math.max(1, Math.ceil(data.total / data.limit)));
+   860→    } catch {
+   861→      toast.error('Failed to load blog posts');
+   862→    } finally {
+   863→      setLoading(false);
+   864→    }
+   865→  }, [page, search, statusFilter]);
+   866→
+   867→  useEffect(() => { loadPosts(); }, [loadPosts]);
+   868→
+   869→  const handleOpenCreate = () => {
+   870→    setEditingId(null);
+   871→    setForm(DEFAULT_BLOG);
+   872→    setDialogOpen(true);
+   873→  };
+   874→
+   875→  const handleOpenEdit = (p: BlogPost) => {
+   876→    setEditingId(p.id);
+   877→    setForm({
+   878→      title: p.title, slug: p.slug, excerpt: p.excerpt || '', content: p.content || '',
+   879→      author: p.author || '', readingTime: p.readingTime || 5, coverImage: p.coverImage || '',
+   880→      status: p.status, isFeatured: p.isFeatured, seoTitle: p.seoTitle || '', seoDescription: p.seoDescription || '',
+   881→    });
+   882→    setDialogOpen(true);
+   883→  };
+   884→
+   885→  const handleSave = async () => {
+   886→    if (!form.title.trim()) { toast.error('Title is required'); return; }
+   887→    setSaving(true);
+   888→    try {
+   889→      const payload = { ...form, slug: form.slug || generateSlug(form.title) };
+   890→      if (editingId) {
+   891→        await apiFetch(`/api/admin/blog/${editingId}`, {
+   892→          method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+   893→        });
+   894→        toast.success('Post updated!');
+   895→      } else {
+   896→        await apiFetch('/api/admin/blog', {
+   897→          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+   898→        });
+   899→        toast.success('Post created!');
+   900→      }
+   901→      setDialogOpen(false);
+   902→      loadPosts();
+   903→    } catch (err) {
+   904→      toast.error(err instanceof Error ? err.message : 'Save failed');
+   905→    } finally {
+   906→      setSaving(false);
+   907→    }
+   908→  };
+   909→
+   910→  const handleDelete = async () => {
+   911→    if (!deleteId) return;
+   912→    try {
+   913→      await apiFetch(`/api/admin/blog/${deleteId}`, { method: 'DELETE' });
+   914→      toast.success('Post deleted');
+   915→      setDeleteOpen(false);
+   916→      setDeleteId(null);
+   917→      loadPosts();
+   918→    } catch { toast.error('Delete failed'); }
+   919→  };
+   920→
+   921→  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+   922→    const file = e.target.files?.[0];
+   923→    if (!file) return;
+   924→    setUploading(true);
+   925→    try {
+   926→      const url = await uploadFile(file);
+   927→      setForm((f) => ({ ...f, coverImage: url }));
+   928→      toast.success('Image uploaded!');
+   929→    } catch { toast.error('Upload failed'); } finally {
+   930→      setUploading(false);
+   931→      if (fileInputRef.current) fileInputRef.current.value = '';
+   932→    }
+   933→  };
+   934→
+   935→  const updateField = <K extends keyof typeof form>(key: K, value: typeof form[K]) => {
+   936→    setForm((f) => {
+   937→      const updated = { ...f, [key]: value };
+   938→      if (key === 'title' && !editingId) updated.slug = generateSlug(value as string);
+   939→      return updated;
+   940→    });
+   941→  };
+   942→
+   943→  return (
+   944→    <div className="space-y-4">
+   945→      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+   946→        <h1 className="text-2xl font-bold text-navy">Blog Posts</h1>
+   947→        <div className="flex flex-wrap gap-2">
+   948→          <div className="relative">
+   949→            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" />
+   950→            <Input placeholder="Search posts..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9 w-56" />
+   951→          </div>
+   952→          <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
+   953→            <SelectTrigger className="w-32"><SelectValue placeholder="All Status" /></SelectTrigger>
+   954→            <SelectContent>
+   955→              <SelectItem value="all">All Status</SelectItem>
+   956→              <SelectItem value="published">Published</SelectItem>
+   957→              <SelectItem value="draft">Draft</SelectItem>
+   958→            </SelectContent>
+   959→          </Select>
+   960→          <Button onClick={handleOpenCreate} className="bg-gold hover:bg-gold/90 text-navy font-semibold gap-2">
+   961→            <Plus className="size-4" /> Add Post
+   962→          </Button>
+   963→        </div>
+   964→      </div>
+   965→
+   966→      <Card>
+   967→        <CardContent className="p-0">
+   968→          {loading ? (
+   969→            <div className="p-4 space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>
+   970→          ) : (
+   971→            <div className="overflow-x-auto">
+   972→              <Table>
+   973→                <TableHeader>
+   974→                  <TableRow>
+   975→                    <TableHead>Title</TableHead>
+   976→                    <TableHead>Status</TableHead>
+   977→                    <TableHead className="hidden md:table-cell">Author</TableHead>
+   978→                    <TableHead className="hidden sm:table-cell">Date</TableHead>
+   979→                    <TableHead className="text-right">Actions</TableHead>
+   980→                  </TableRow>
+   981→                </TableHeader>
+   982→                <TableBody>
+   983→                  {posts.length === 0 ? (
+   984→                    <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted">No posts found</TableCell></TableRow>
+   985→                  ) : posts.map((p) => (
+   986→                    <TableRow key={p.id}>
+   987→                      <TableCell>
+   988→                        <div className="flex items-center gap-2">
+   989→                          {p.isFeatured && <Star className="size-3.5 text-gold fill-gold" />}
+   990→                          <span className="font-medium">{p.title}</span>
+   991→                        </div>
+   992→                      </TableCell>
+   993→                      <TableCell>
+   994→                        <Badge variant={p.status === 'published' ? 'default' : 'secondary'} className={p.status === 'published' ? 'bg-green-100 text-green-800' : ''}>
+   995→                          {p.status}
+   996→                        </Badge>
+   997→                      </TableCell>
+   998→                      <TableCell className="hidden md:table-cell text-muted">{p.author || '—'}</TableCell>
+   999→                      <TableCell className="hidden sm:table-cell text-muted text-sm">{formatDate(p.createdAt)}</TableCell>
+  1000→                      <TableCell className="text-right">
+  1001→                        <DropdownMenu>
+  1002→                          <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="size-8"><MoreHorizontal className="size-4" /></Button></DropdownMenuTrigger>
+  1003→                          <DropdownMenuContent align="end">
+  1004→                            <DropdownMenuItem onClick={() => handleOpenEdit(p)}><Pencil className="size-4 mr-2" /> Edit</DropdownMenuItem>
+  1005→                            <DropdownMenuItem onClick={() => { setDeleteId(p.id); setDeleteOpen(true); }} variant="destructive"><Trash2 className="size-4 mr-2" /> Delete</DropdownMenuItem>
+  1006→                          </DropdownMenuContent>
+  1007→                        </DropdownMenu>
+  1008→                      </TableCell>
+  1009→                    </TableRow>
+  1010→                  ))}
+  1011→                </TableBody>
+  1012→              </Table>
+  1013→            </div>
+  1014→          )}
+  1015→        </CardContent>
+  1016→      </Card>
+  1017→
+  1018→      {totalPages > 1 && (
+  1019→        <div className="flex items-center justify-center gap-2">
+  1020→          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}><ChevronLeft className="size-4" /></Button>
+  1021→          <span className="text-sm text-muted">Page {page} of {totalPages}</span>
+  1022→          <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}><ChevronRight className="size-4" /></Button>
+  1023→        </div>
+  1024→      )}
+  1025→
+  1026→      {/* Create/Edit Dialog */}
+  1027→      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+  1028→        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+  1029→          <DialogHeader>
+  1030→            <DialogTitle className="text-navy">{editingId ? 'Edit Post' : 'Add Post'}</DialogTitle>
+  1031→            <DialogDescription>Fill in the blog post details below.</DialogDescription>
+  1032→          </DialogHeader>
+  1033→          <div className="grid gap-4 py-2">
+  1034→            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  1035→              <div className="space-y-2">
+  1036→                <Label>Title *</Label>
+  1037→                <Input value={form.title} onChange={(e) => updateField('title', e.target.value)} placeholder="Post title" />
+  1038→              </div>
+  1039→              <div className="space-y-2">
+  1040→                <Label>Slug</Label>
+  1041→                <Input value={form.slug} onChange={(e) => updateField('slug', e.target.value)} placeholder="auto-generated-slug" />
+  1042→              </div>
+  1043→            </div>
+  1044→            <div className="space-y-2">
+  1045→              <Label>Excerpt</Label>
+  1046→              <Textarea value={form.excerpt} onChange={(e) => updateField('excerpt', e.target.value)} placeholder="Brief excerpt" rows={2} />
+  1047→            </div>
+  1048→            <div className="space-y-2">
+  1049→              <Label>Content</Label>
+  1050→              <Textarea value={form.content} onChange={(e) => updateField('content', e.target.value)} placeholder="Write your article content here... (Markdown supported)" rows={12} className="min-h-[200px] font-mono text-sm" />
+  1051→            </div>
+  1052→            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+  1053→              <div className="space-y-2">
+  1054→                <Label>Author</Label>
+  1055→                <Input value={form.author} onChange={(e) => updateField('author', e.target.value)} placeholder="Author name" />
+  1056→              </div>
+  1057→              <div className="space-y-2">
+  1058→                <Label>Reading Time (min)</Label>
+  1059→                <Input type="number" min={1} value={form.readingTime} onChange={(e) => updateField('readingTime', parseInt(e.target.value) || 1)} />
+  1060→              </div>
+  1061→              <div className="space-y-2">
+  1062→                <Label>Status</Label>
+  1063→                <Select value={form.status} onValueChange={(v) => updateField('status', v)}>
+  1064→                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+  1065→                  <SelectContent>
+  1066→                    <SelectItem value="draft">Draft</SelectItem>
+  1067→                    <SelectItem value="published">Published</SelectItem>
+  1068→                  </SelectContent>
+  1069→                </Select>
+  1070→              </div>
+  1071→            </div>
+  1072→            <div className="space-y-2">
+  1073→              <Label>Cover Image</Label>
+  1074→              <div className="flex gap-2">
+  1075→                <Input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="flex-1" />
+  1076→                {uploading && <Loader2 className="size-5 animate-spin text-muted self-center" />}
+  1077→              </div>
+  1078→              {form.coverImage && (
+  1079→                <div className="relative w-32 h-20 rounded-lg overflow-hidden border mt-2">
+  1080→                  <img src={form.coverImage} alt="Cover" className="w-full h-full object-cover" />
+  1081→                  <button onClick={() => updateField('coverImage', '')} className="absolute top-1 right-1 size-5 bg-black/60 rounded-full flex items-center justify-center">
+  1082→                    <X className="size-3 text-white" />
+  1083→                  </button>
+  1084→                </div>
+  1085→              )}
+  1086→            </div>
+  1087→            <div className="flex items-center gap-2">
+  1088→              <Switch checked={form.isFeatured} onCheckedChange={(v) => updateField('isFeatured', v)} />
+  1089→              <Label>Featured</Label>
+  1090→            </div>
+  1091→            <Separator />
+  1092→            <p className="text-sm font-medium text-navy">SEO</p>
+  1093→            <div className="space-y-2">
+  1094→              <Label>SEO Title</Label>
+  1095→              <Input value={form.seoTitle} onChange={(e) => updateField('seoTitle', e.target.value)} placeholder="Meta title for SEO" />
+  1096→            </div>
+  1097→            <div className="space-y-2">
+  1098→              <Label>SEO Description</Label>
+  1099→              <Textarea value={form.seoDescription} onChange={(e) => updateField('seoDescription', e.target.value)} placeholder="Meta description for SEO" rows={2} />
+  1100→            </div>
+  1101→          </div>
+  1102→          <DialogFooter>
+  1103→            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+  1104→            <Button onClick={handleSave} disabled={saving} className="bg-gold hover:bg-gold/90 text-navy font-semibold">
+  1105→              {saving && <Loader2 className="mr-2 size-4 animate-spin" />}{editingId ? 'Update' : 'Create'}
+  1106→            </Button>
+  1107→          </DialogFooter>
+  1108→        </DialogContent>
+  1109→      </Dialog>
+  1110→
+  1111→      {/* Delete Dialog */}
+  1112→      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+  1113→        <DialogContent className="sm:max-w-md">
+  1114→          <DialogHeader>
+  1115→            <DialogTitle className="text-navy">Delete Post</DialogTitle>
+  1116→            <DialogDescription>Are you sure? This action cannot be undone.</DialogDescription>
+  1117→          </DialogHeader>
+  1118→          <DialogFooter>
+  1119→            <Button variant="outline" onClick={() => setDeleteOpen(false)}>Cancel</Button>
+  1120→            <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+  1121→          </DialogFooter>
+  1122→        </DialogContent>
+  1123→      </Dialog>
+  1124→    </div>
+  1125→  );
+  1126→}
+  1127→
+  1128→// ==================== TESTIMONIALS SECTION ====================
+  1129→
+  1130→const DEFAULT_TESTIMONIAL: Omit<Testimonial, 'id' | 'createdAt'> = {
+  1131→  name: '', position: '', company: '', content: '', photo: '', isPublished: false,
+  1132→};
+  1133→
+  1134→function TestimonialsSection() {
+  1135→  const [items, setItems] = useState<Testimonial[]>([]);
+  1136→  const [loading, setLoading] = useState(true);
+  1137→  const [dialogOpen, setDialogOpen] = useState(false);
+  1138→  const [deleteOpen, setDeleteOpen] = useState(false);
+  1139→  const [editingId, setEditingId] = useState<string | null>(null);
+  1140→  const [deleteId, setDeleteId] = useState<string | null>(null);
+  1141→  const [form, setForm] = useState(DEFAULT_TESTIMONIAL);
+  1142→  const [saving, setSaving] = useState(false);
+  1143→  const [uploading, setUploading] = useState(false);
+  1144→  const fileInputRef = useRef<HTMLInputElement>(null);
+  1145→
+  1146→  const load = useCallback(async () => {
+  1147→    setLoading(true);
+  1148→    try {
+  1149→      const data = await apiFetch<{ data: Testimonial[] }>('/api/admin/testimonials');
+  1150→      setItems(data.data);
+  1151→    } catch { toast.error('Failed to load testimonials'); } finally { setLoading(false); }
+  1152→  }, []);
+  1153→
+  1154→  useEffect(() => { load(); }, [load]);
+  1155→
+  1156→  const handleOpenCreate = () => { setEditingId(null); setForm(DEFAULT_TESTIMONIAL); setDialogOpen(true); };
+  1157→
+  1158→  const handleOpenEdit = (t: Testimonial) => {
+  1159→    setEditingId(t.id);
+  1160→    setForm({ name: t.name, position: t.position || '', company: t.company || '', content: t.content, photo: t.photo || '', isPublished: t.isPublished });
+  1161→    setDialogOpen(true);
+  1162→  };
+  1163→
+  1164→  const handleSave = async () => {
+  1165→    if (!form.name.trim() || !form.content.trim()) { toast.error('Name and content are required'); return; }
+  1166→    setSaving(true);
+  1167→    try {
+  1168→      if (editingId) {
+  1169→        await apiFetch(`/api/admin/testimonials/${editingId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
+  1170→        toast.success('Testimonial updated!');
+  1171→      } else {
+  1172→        await apiFetch('/api/admin/testimonials', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
+  1173→        toast.success('Testimonial created!');
+  1174→      }
+  1175→      setDialogOpen(false);
+  1176→      load();
+  1177→    } catch (err) { toast.error(err instanceof Error ? err.message : 'Save failed'); } finally { setSaving(false); }
+  1178→  };
+  1179→
+  1180→  const handleDelete = async () => {
+  1181→    if (!deleteId) return;
+  1182→    try {
+  1183→      await apiFetch(`/api/admin/testimonials/${deleteId}`, { method: 'DELETE' });
+  1184→      toast.success('Testimonial deleted');
+  1185→      setDeleteOpen(false); setDeleteId(null); load();
+  1186→    } catch { toast.error('Delete failed'); }
+  1187→  };
+  1188→
+  1189→  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  1190→    const file = e.target.files?.[0];
+  1191→    if (!file) return;
+  1192→    setUploading(true);
+  1193→    try { const url = await uploadFile(file); setForm((f) => ({ ...f, photo: url })); toast.success('Photo uploaded!'); }
+  1194→    catch { toast.error('Upload failed'); } finally { setUploading(false); if (fileInputRef.current) fileInputRef.current.value = ''; }
+  1195→  };
+  1196→
+  1197→  return (
+  1198→    <div className="space-y-4">
+  1199→      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+  1200→        <h1 className="text-2xl font-bold text-navy">Testimonials</h1>
+  1201→        <Button onClick={handleOpenCreate} className="bg-gold hover:bg-gold/90 text-navy font-semibold gap-2">
+  1202→          <Plus className="size-4" /> Add Testimonial
+  1203→        </Button>
+  1204→      </div>
+  1205→      <Card>
+  1206→        <CardContent className="p-0">
+  1207→          {loading ? (
+  1208→            <div className="p-4 space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}</div>
+  1209→          ) : (
+  1210→            <div className="overflow-x-auto">
+  1211→              <Table>
+  1212→                <TableHeader>
+  1213→                  <TableRow>
+  1214→                    <TableHead>Name</TableHead>
+  1215→                    <TableHead className="hidden sm:table-cell">Company</TableHead>
+  1216→                    <TableHead className="hidden md:table-cell">Content</TableHead>
+  1217→                    <TableHead>Published</TableHead>
+  1218→                    <TableHead className="text-right">Actions</TableHead>
+  1219→                  </TableRow>
+  1220→                </TableHeader>
+  1221→                <TableBody>
+  1222→                  {items.length === 0 ? (
+  1223→                    <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted">No testimonials yet</TableCell></TableRow>
+  1224→                  ) : items.map((t) => (
+  1225→                    <TableRow key={t.id}>
+  1226→                      <TableCell className="font-medium">{t.name}</TableCell>
+  1227→                      <TableCell className="hidden sm:table-cell text-muted">{t.company || '—'}</TableCell>
+  1228→                      <TableCell className="hidden md:table-cell text-muted max-w-xs truncate">{truncate(t.content, 60)}</TableCell>
+  1229→                      <TableCell>
+  1230→                        <Badge variant={t.isPublished ? 'default' : 'secondary'} className={t.isPublished ? 'bg-green-100 text-green-800' : ''}>
+  1231→                          {t.isPublished ? 'Published' : 'Draft'}
+  1232→                        </Badge>
+  1233→                      </TableCell>
+  1234→                      <TableCell className="text-right">
+  1235→                        <DropdownMenu>
+  1236→                          <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="size-8"><MoreHorizontal className="size-4" /></Button></DropdownMenuTrigger>
+  1237→                          <DropdownMenuContent align="end">
+  1238→                            <DropdownMenuItem onClick={() => handleOpenEdit(t)}><Pencil className="size-4 mr-2" /> Edit</DropdownMenuItem>
+  1239→                            <DropdownMenuItem onClick={() => { setDeleteId(t.id); setDeleteOpen(true); }} variant="destructive"><Trash2 className="size-4 mr-2" /> Delete</DropdownMenuItem>
+  1240→                          </DropdownMenuContent>
+  1241→                        </DropdownMenu>
+  1242→                      </TableCell>
+  1243→                    </TableRow>
+  1244→                  ))}
+  1245→                </TableBody>
+  1246→              </Table>
+  1247→            </div>
+  1248→          )}
+  1249→        </CardContent>
+  1250→      </Card>
+  1251→
+  1252→      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+  1253→        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+  1254→          <DialogHeader>
+  1255→            <DialogTitle className="text-navy">{editingId ? 'Edit Testimonial' : 'Add Testimonial'}</DialogTitle>
+  1256→          </DialogHeader>
+  1257→          <div className="grid gap-4 py-2">
+  1258→            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  1259→              <div className="space-y-2"><Label>Name *</Label><Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} /></div>
+  1260→              <div className="space-y-2"><Label>Position</Label><Input value={form.position} onChange={(e) => setForm((f) => ({ ...f, position: e.target.value }))} /></div>
+  1261→            </div>
+  1262→            <div className="space-y-2"><Label>Company</Label><Input value={form.company} onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))} /></div>
+  1263→            <div className="space-y-2"><Label>Content *</Label><Textarea value={form.content} onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))} rows={4} /></div>
+  1264→            <div className="space-y-2">
+  1265→              <Label>Photo</Label>
+  1266→              <div className="flex gap-2">
+  1267→                <Input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="flex-1" />
+  1268→                {uploading && <Loader2 className="size-5 animate-spin text-muted self-center" />}
+  1269→              </div>
+  1270→              {form.photo && (
+  1271→                <div className="relative w-16 h-16 rounded-full overflow-hidden border mt-2">
+  1272→                  <img src={form.photo} alt="Photo" className="w-full h-full object-cover" />
+  1273→                  <button onClick={() => setForm((f) => ({ ...f, photo: '' }))} className="absolute top-0 right-0 size-4 bg-black/60 rounded-full flex items-center justify-center">
+  1274→                    <X className="size-2.5 text-white" />
+  1275→                  </button>
+  1276→                </div>
+  1277→              )}
+  1278→            </div>
+  1279→            <div className="flex items-center gap-2">
+  1280→              <Switch checked={form.isPublished} onCheckedChange={(v) => setForm((f) => ({ ...f, isPublished: v }))} />
+  1281→              <Label>Published</Label>
+  1282→            </div>
+  1283→          </div>
+  1284→          <DialogFooter>
+  1285→            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+  1286→            <Button onClick={handleSave} disabled={saving} className="bg-gold hover:bg-gold/90 text-navy font-semibold">
+  1287→              {saving && <Loader2 className="mr-2 size-4 animate-spin" />}{editingId ? 'Update' : 'Create'}
+  1288→            </Button>
+  1289→          </DialogFooter>
+  1290→        </DialogContent>
+  1291→      </Dialog>
+  1292→
+  1293→      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+  1294→        <DialogContent className="sm:max-w-md">
+  1295→          <DialogHeader><DialogTitle className="text-navy">Delete Testimonial</DialogTitle><DialogDescription>Are you sure? This cannot be undone.</DialogDescription></DialogHeader>
+  1296→          <DialogFooter><Button variant="outline" onClick={() => setDeleteOpen(false)}>Cancel</Button><Button variant="destructive" onClick={handleDelete}>Delete</Button></DialogFooter>
+  1297→        </DialogContent>
+  1298→      </Dialog>
+  1299→    </div>
+  1300→  );
+  1301→}
+  1302→
+  1303→// ==================== CLIENTS SECTION ====================
+  1304→
+  1305→const DEFAULT_CLIENT: Omit<Client, 'id' | 'createdAt'> = {
+  1306→  name: '', logo: '', website: '', industry: '', isVisible: false,
+  1307→};
+  1308→
+  1309→function ClientsSection() {
+  1310→  const [items, setItems] = useState<Client[]>([]);
+  1311→  const [loading, setLoading] = useState(true);
+  1312→  const [dialogOpen, setDialogOpen] = useState(false);
+  1313→  const [deleteOpen, setDeleteOpen] = useState(false);
+  1314→  const [editingId, setEditingId] = useState<string | null>(null);
+  1315→  const [deleteId, setDeleteId] = useState<string | null>(null);
+  1316→  const [form, setForm] = useState(DEFAULT_CLIENT);
+  1317→  const [saving, setSaving] = useState(false);
+  1318→  const [uploading, setUploading] = useState(false);
+  1319→  const fileInputRef = useRef<HTMLInputElement>(null);
+  1320→
+  1321→  const load = useCallback(async () => {
+  1322→    setLoading(true);
+  1323→    try { const data = await apiFetch<{ data: Client[] }>('/api/admin/clients'); setItems(data.data); }
+  1324→    catch { toast.error('Failed to load clients'); } finally { setLoading(false); }
+  1325→  }, []);
+  1326→
+  1327→  useEffect(() => { load(); }, [load]);
+  1328→
+  1329→  const handleOpenCreate = () => { setEditingId(null); setForm(DEFAULT_CLIENT); setDialogOpen(true); };
+  1330→  const handleOpenEdit = (c: Client) => {
+  1331→    setEditingId(c.id);
+  1332→    setForm({ name: c.name, logo: c.logo || '', website: c.website || '', industry: c.industry || '', isVisible: c.isVisible });
+  1333→    setDialogOpen(true);
+  1334→  };
+  1335→
+  1336→  const handleSave = async () => {
+  1337→    if (!form.name.trim()) { toast.error('Name is required'); return; }
+  1338→    setSaving(true);
+  1339→    try {
+  1340→      if (editingId) {
+  1341→        await apiFetch(`/api/admin/clients/${editingId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
+  1342→        toast.success('Client updated!');
+  1343→      } else {
+  1344→        await apiFetch('/api/admin/clients', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
+  1345→        toast.success('Client created!');
+  1346→      }
+  1347→      setDialogOpen(false); load();
+  1348→    } catch (err) { toast.error(err instanceof Error ? err.message : 'Save failed'); } finally { setSaving(false); }
+  1349→  };
+  1350→
+  1351→  const handleDelete = async () => {
+  1352→    if (!deleteId) return;
+  1353→    try { await apiFetch(`/api/admin/clients/${deleteId}`, { method: 'DELETE' }); toast.success('Client deleted'); setDeleteOpen(false); setDeleteId(null); load(); }
+  1354→    catch { toast.error('Delete failed'); }
+  1355→  };
+  1356→
+  1357→  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  1358→    const file = e.target.files?.[0]; if (!file) return;
+  1359→    setUploading(true);
+  1360→    try { const url = await uploadFile(file); setForm((f) => ({ ...f, logo: url })); toast.success('Logo uploaded!'); }
+  1361→    catch { toast.error('Upload failed'); } finally { setUploading(false); if (fileInputRef.current) fileInputRef.current.value = ''; }
+  1362→  };
+  1363→
+  1364→  return (
+  1365→    <div className="space-y-4">
+  1366→      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+  1367→        <h1 className="text-2xl font-bold text-navy">Clients</h1>
+  1368→        <Button onClick={handleOpenCreate} className="bg-gold hover:bg-gold/90 text-navy font-semibold gap-2">
+  1369→          <Plus className="size-4" /> Add Client
+  1370→        </Button>
+  1371→      </div>
+  1372→      <Card>
+  1373→        <CardContent className="p-0">
+  1374→          {loading ? (
+  1375→            <div className="p-4 space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}</div>
+  1376→          ) : (
+  1377→            <div className="overflow-x-auto">
+  1378→              <Table>
+  1379→                <TableHeader>
+  1380→                  <TableRow>
+  1381→                    <TableHead>Name</TableHead>
+  1382→                    <TableHead className="hidden sm:table-cell">Industry</TableHead>
+  1383→                    <TableHead>Visible</TableHead>
+  1384→                    <TableHead className="text-right">Actions</TableHead>
+  1385→                  </TableRow>
+  1386→                </TableHeader>
+  1387→                <TableBody>
+  1388→                  {items.length === 0 ? (
+  1389→                    <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted">No clients yet</TableCell></TableRow>
+  1390→                  ) : items.map((c) => (
+  1391→                    <TableRow key={c.id}>
+  1392→                      <TableCell className="font-medium">{c.name}</TableCell>
+  1393→                      <TableCell className="hidden sm:table-cell text-muted">{c.industry || '—'}</TableCell>
+  1394→                      <TableCell>
+  1395→                        <Badge variant={c.isVisible ? 'default' : 'secondary'} className={c.isVisible ? 'bg-green-100 text-green-800' : ''}>
+  1396→                          {c.isVisible ? 'Visible' : 'Hidden'}
+  1397→                        </Badge>
+  1398→                      </TableCell>
+  1399→                      <TableCell className="text-right">
+  1400→                        <DropdownMenu>
+  1401→                          <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="size-8"><MoreHorizontal className="size-4" /></Button></DropdownMenuTrigger>
+  1402→                          <DropdownMenuContent align="end">
+  1403→                            <DropdownMenuItem onClick={() => handleOpenEdit(c)}><Pencil className="size-4 mr-2" /> Edit</DropdownMenuItem>
+  1404→                            <DropdownMenuItem onClick={() => { setDeleteId(c.id); setDeleteOpen(true); }} variant="destructive"><Trash2 className="size-4 mr-2" /> Delete</DropdownMenuItem>
+  1405→                          </DropdownMenuContent>
+  1406→                        </DropdownMenu>
+  1407→                      </TableCell>
+  1408→                    </TableRow>
+  1409→                  ))}
+  1410→                </TableBody>
+  1411→              </Table>
+  1412→            </div>
+  1413→          )}
+  1414→        </CardContent>
+  1415→      </Card>
+  1416→
+  1417→      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+  1418→        <DialogContent className="sm:max-w-lg">
+  1419→          <DialogHeader><DialogTitle className="text-navy">{editingId ? 'Edit Client' : 'Add Client'}</DialogTitle></DialogHeader>
+  1420→          <div className="grid gap-4 py-2">
+  1421→            <div className="space-y-2"><Label>Name *</Label><Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} /></div>
+  1422→            <div className="space-y-2">
+  1423→              <Label>Logo</Label>
+  1424→              <div className="flex gap-2">
+  1425→                <Input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="flex-1" />
+  1426→                {uploading && <Loader2 className="size-5 animate-spin text-muted self-center" />}
+  1427→              </div>
+  1428→              {form.logo && (
+  1429→                <div className="relative w-24 h-16 rounded-lg overflow-hidden border mt-2 bg-light-gray p-2">
+  1430→                  <img src={form.logo} alt="Logo" className="w-full h-full object-contain" />
+  1431→                  <button onClick={() => setForm((f) => ({ ...f, logo: '' }))} className="absolute -top-1 -right-1 size-5 bg-red-500 rounded-full flex items-center justify-center">
+  1432→                    <X className="size-3 text-white" />
+  1433→                  </button>
+  1434→                </div>
+  1435→              )}
+  1436→            </div>
+  1437→            <div className="space-y-2"><Label>Website</Label><Input value={form.website} onChange={(e) => setForm((f) => ({ ...f, website: e.target.value }))} placeholder="https://..." /></div>
+  1438→            <div className="space-y-2"><Label>Industry</Label><Input value={form.industry} onChange={(e) => setForm((f) => ({ ...f, industry: e.target.value }))} /></div>
+  1439→            <div className="flex items-center gap-2">
+  1440→              <Switch checked={form.isVisible} onCheckedChange={(v) => setForm((f) => ({ ...f, isVisible: v }))} />
+  1441→              <Label>Visible</Label>
+  1442→            </div>
+  1443→          </div>
+  1444→          <DialogFooter>
+  1445→            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+  1446→            <Button onClick={handleSave} disabled={saving} className="bg-gold hover:bg-gold/90 text-navy font-semibold">
+  1447→              {saving && <Loader2 className="mr-2 size-4 animate-spin" />}{editingId ? 'Update' : 'Create'}
+  1448→            </Button>
+  1449→          </DialogFooter>
+  1450→        </DialogContent>
+  1451→      </Dialog>
+  1452→
+  1453→      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+  1454→        <DialogContent className="sm:max-w-md">
+  1455→          <DialogHeader><DialogTitle className="text-navy">Delete Client</DialogTitle><DialogDescription>Are you sure? This cannot be undone.</DialogDescription></DialogHeader>
+  1456→          <DialogFooter><Button variant="outline" onClick={() => setDeleteOpen(false)}>Cancel</Button><Button variant="destructive" onClick={handleDelete}>Delete</Button></DialogFooter>
+  1457→        </DialogContent>
+  1458→      </Dialog>
+  1459→    </div>
+  1460→  );
+  1461→}
+  1462→
+  1463→// ==================== SERVICES SECTION ====================
+  1464→
+  1465→const DEFAULT_SERVICE: Omit<Service, 'id' | 'createdAt'> = {
+  1466→  title: '', slug: '', description: '', icon: 'Globe', highlights: [],
+  1467→  ctaText: '', sortOrder: 0, isPublished: false,
+  1468→};
+  1469→
+  1470→function ServicesSection() {
+  1471→  const [items, setItems] = useState<Service[]>([]);
+  1472→  const [loading, setLoading] = useState(true);
+  1473→  const [dialogOpen, setDialogOpen] = useState(false);
+  1474→  const [deleteOpen, setDeleteOpen] = useState(false);
+  1475→  const [editingId, setEditingId] = useState<string | null>(null);
+  1476→  const [deleteId, setDeleteId] = useState<string | null>(null);
+  1477→  const [form, setForm] = useState(DEFAULT_SERVICE);
+  1478→  const [highlightsText, setHighlightsText] = useState('');
+  1479→  const [saving, setSaving] = useState(false);
+  1480→
+  1481→  const load = useCallback(async () => {
+  1482→    setLoading(true);
+  1483→    try { const data = await apiFetch<{ data: Service[] }>('/api/admin/services'); setItems(data.data); }
+  1484→    catch { toast.error('Failed to load services'); } finally { setLoading(false); }
+  1485→  }, []);
+  1486→
+  1487→  useEffect(() => { load(); }, [load]);
+  1488→
+  1489→  const handleOpenCreate = () => {
+  1490→    setEditingId(null);
+  1491→    setForm(DEFAULT_SERVICE);
+  1492→    setHighlightsText('');
+  1493→    setDialogOpen(true);
+  1494→  };
+  1495→
+  1496→  const handleOpenEdit = (s: Service) => {
+  1497→    setEditingId(s.id);
+  1498→    setForm({
+  1499→      title: s.title, slug: s.slug, description: s.description || '', icon: s.icon || 'Globe',
+  1500→      highlights: s.highlights || [], ctaText: s.ctaText || '', sortOrder: s.sortOrder || 0, isPublished: s.isPublished,
+  1501→    });
+  1502→    setHighlightsText((s.highlights || []).join('\n'));
+  1503→    setDialogOpen(true);
+  1504→  };
+  1505→
+  1506→  const handleSave = async () => {
+  1507→    if (!form.title.trim()) { toast.error('Title is required'); return; }
+  1508→    setSaving(true);
+  1509→    try {
+  1510→      const payload = {
+  1511→        ...form,
+  1512→        slug: form.slug || generateSlug(form.title),
+  1513→        highlights: highlightsText.split('\n').map((h) => h.trim()).filter(Boolean),
+  1514→      };
+  1515→      if (editingId) {
+  1516→        await apiFetch(`/api/admin/services/${editingId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  1517→        toast.success('Service updated!');
+  1518→      } else {
+  1519→        await apiFetch('/api/admin/services', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  1520→        toast.success('Service created!');
+  1521→      }
+  1522→      setDialogOpen(false); load();
+  1523→    } catch (err) { toast.error(err instanceof Error ? err.message : 'Save failed'); } finally { setSaving(false); }
+  1524→  };
+  1525→
+  1526→  const handleDelete = async () => {
+  1527→    if (!deleteId) return;
+  1528→    try { await apiFetch(`/api/admin/services/${deleteId}`, { method: 'DELETE' }); toast.success('Service deleted'); setDeleteOpen(false); setDeleteId(null); load(); }
+  1529→    catch { toast.error('Delete failed'); }
+  1530→  };
+  1531→
+  1532→  const ICON_OPTIONS = ['Globe', 'Smartphone', 'Monitor', 'Palette', 'Wrench', 'Code', 'Database', 'Shield', 'Zap', 'Settings', 'Layers', 'Cpu'];
+  1533→
+  1534→  return (
+  1535→    <div className="space-y-4">
+  1536→      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+  1537→        <h1 className="text-2xl font-bold text-navy">Services</h1>
+  1538→        <Button onClick={handleOpenCreate} className="bg-gold hover:bg-gold/90 text-navy font-semibold gap-2">
+  1539→          <Plus className="size-4" /> Add Service
+  1540→        </Button>
+  1541→      </div>
+  1542→      <Card>
+  1543→        <CardContent className="p-0">
+  1544→          {loading ? (
+  1545→            <div className="p-4 space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}</div>
+  1546→          ) : (
+  1547→            <div className="overflow-x-auto">
+  1548→              <Table>
+  1549→                <TableHeader>
+  1550→                  <TableRow>
+  1551→                    <TableHead>Title</TableHead>
+  1552→                    <TableHead className="hidden sm:table-cell">Icon</TableHead>
+  1553→                    <TableHead className="hidden md:table-cell">Sort Order</TableHead>
+  1554→                    <TableHead>Published</TableHead>
+  1555→                    <TableHead className="text-right">Actions</TableHead>
+  1556→                  </TableRow>
+  1557→                </TableHeader>
+  1558→                <TableBody>
+  1559→                  {items.length === 0 ? (
+  1560→                    <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted">No services yet</TableCell></TableRow>
+  1561→                  ) : items.map((s) => (
+  1562→                    <TableRow key={s.id}>
+  1563→                      <TableCell className="font-medium">{s.title}</TableCell>
+  1564→                      <TableCell className="hidden sm:table-cell"><code className="text-xs bg-light-gray px-2 py-1 rounded">{s.icon}</code></TableCell>
+  1565→                      <TableCell className="hidden md:table-cell text-muted">{s.sortOrder}</TableCell>
+  1566→                      <TableCell>
+  1567→                        <Badge variant={s.isPublished ? 'default' : 'secondary'} className={s.isPublished ? 'bg-green-100 text-green-800' : ''}>
+  1568→                          {s.isPublished ? 'Published' : 'Draft'}
+  1569→                        </Badge>
+  1570→                      </TableCell>
+  1571→                      <TableCell className="text-right">
+  1572→                        <DropdownMenu>
+  1573→                          <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="size-8"><MoreHorizontal className="size-4" /></Button></DropdownMenuTrigger>
+  1574→                          <DropdownMenuContent align="end">
+  1575→                            <DropdownMenuItem onClick={() => handleOpenEdit(s)}><Pencil className="size-4 mr-2" /> Edit</DropdownMenuItem>
+  1576→                            <DropdownMenuItem onClick={() => { setDeleteId(s.id); setDeleteOpen(true); }} variant="destructive"><Trash2 className="size-4 mr-2" /> Delete</DropdownMenuItem>
+  1577→                          </DropdownMenuContent>
+  1578→                        </DropdownMenu>
+  1579→                      </TableCell>
+  1580→                    </TableRow>
+  1581→                  ))}
+  1582→                </TableBody>
+  1583→              </Table>
+  1584→            </div>
+  1585→          )}
+  1586→        </CardContent>
+  1587→      </Card>
+  1588→
+  1589→      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+  1590→        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+  1591→          <DialogHeader><DialogTitle className="text-navy">{editingId ? 'Edit Service' : 'Add Service'}</DialogTitle></DialogHeader>
+  1592→          <div className="grid gap-4 py-2">
+  1593→            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  1594→              <div className="space-y-2"><Label>Title *</Label><Input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} /></div>
+  1595→              <div className="space-y-2"><Label>Slug</Label><Input value={form.slug} onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))} /></div>
+  1596→            </div>
+  1597→            <div className="space-y-2"><Label>Description</Label><Textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} rows={3} /></div>
+  1598→            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  1599→              <div className="space-y-2">
+  1600→                <Label>Icon</Label>
+  1601→                <Select value={form.icon} onValueChange={(v) => setForm((f) => ({ ...f, icon: v }))}>
+  1602→                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+  1603→                  <SelectContent>
+  1604→                    {ICON_OPTIONS.map((icon) => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}
+  1605→                  </SelectContent>
+  1606→                </Select>
+  1607→              </div>
+  1608→              <div className="space-y-2"><Label>Sort Order</Label><Input type="number" value={form.sortOrder} onChange={(e) => setForm((f) => ({ ...f, sortOrder: parseInt(e.target.value) || 0 }))} /></div>
+  1609→            </div>
+  1610→            <div className="space-y-2">
+  1611→              <Label>Highlights (one per line)</Label>
+  1612→              <Textarea value={highlightsText} onChange={(e) => setHighlightsText(e.target.value)} placeholder={"Highlight 1\nHighlight 2\nHighlight 3"} rows={4} />
+  1613→            </div>
+  1614→            <div className="space-y-2"><Label>CTA Text</Label><Input value={form.ctaText} onChange={(e) => setForm((f) => ({ ...f, ctaText: e.target.value }))} placeholder="Learn More" /></div>
+  1615→            <div className="flex items-center gap-2">
+  1616→              <Switch checked={form.isPublished} onCheckedChange={(v) => setForm((f) => ({ ...f, isPublished: v }))} />
+  1617→              <Label>Published</Label>
+  1618→            </div>
+  1619→          </div>
+  1620→          <DialogFooter>
+  1621→            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+  1622→            <Button onClick={handleSave} disabled={saving} className="bg-gold hover:bg-gold/90 text-navy font-semibold">
+  1623→              {saving && <Loader2 className="mr-2 size-4 animate-spin" />}{editingId ? 'Update' : 'Create'}
+  1624→            </Button>
+  1625→          </DialogFooter>
+  1626→        </DialogContent>
+  1627→      </Dialog>
+  1628→
+  1629→      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+  1630→        <DialogContent className="sm:max-w-md">
+  1631→          <DialogHeader><DialogTitle className="text-navy">Delete Service</DialogTitle><DialogDescription>Are you sure? This cannot be undone.</DialogDescription></DialogHeader>
+  1632→          <DialogFooter><Button variant="outline" onClick={() => setDeleteOpen(false)}>Cancel</Button><Button variant="destructive" onClick={handleDelete}>Delete</Button></DialogFooter>
+  1633→        </DialogContent>
+  1634→      </Dialog>
+  1635→    </div>
+  1636→  );
+  1637→}
+  1638→
+  1639→// ==================== CONTACT INQUIRIES SECTION ====================
+  1640→
+  1641→function ContactSection() {
+  1642→  const [inquiries, setInquiries] = useState<ContactInquiry[]>([]);
+  1643→  const [loading, setLoading] = useState(true);
+  1644→  const [page, setPage] = useState(1);
+  1645→  const [totalPages, setTotalPages] = useState(1);
+  1646→  const [statusFilter, setStatusFilter] = useState<string>('all');
+  1647→  const [viewOpen, setViewOpen] = useState(false);
+  1648→  const [viewInquiry, setViewInquiry] = useState<ContactInquiry | null>(null);
+  1649→  const [deleteOpen, setDeleteOpen] = useState(false);
+  1650→  const [deleteId, setDeleteId] = useState<string | null>(null);
+  1651→  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  1652→
+  1653→  const load = useCallback(async () => {
+  1654→    setLoading(true);
+  1655→    try {
+  1656→      const params = new URLSearchParams({ page: String(page), limit: '10' });
+  1657→      if (statusFilter && statusFilter !== 'all') params.set('status', statusFilter);
+  1658→      const data = await apiFetch<{ data: ContactInquiry[]; total: number; page: number; limit: number }>(`/api/admin/contact?${params}`);
+  1659→      setInquiries(data.data);
+  1660→      setTotalPages(Math.max(1, Math.ceil(data.total / data.limit)));
+  1661→    } catch { toast.error('Failed to load inquiries'); } finally { setLoading(false); }
+  1662→  }, [page, statusFilter]);
+  1663→
+  1664→  useEffect(() => { load(); }, [load]);
+  1665→
+  1666→  const handleStatusChange = async (id: string, status: string) => {
+  1667→    setUpdatingStatus(id);
+  1668→    try {
+  1669→      await apiFetch(`/api/admin/contact/${id}`, {
+  1670→        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }),
+  1671→      });
+  1672→      toast.success(`Status updated to ${status}`);
+  1673→      load();
+  1674→    } catch { toast.error('Status update failed'); } finally { setUpdatingStatus(null); }
+  1675→  };
+  1676→
+  1677→  const handleDelete = async () => {
+  1678→    if (!deleteId) return;
+  1679→    try {
+  1680→      await apiFetch(`/api/admin/contact/${deleteId}`, { method: 'DELETE' });
+  1681→      toast.success('Inquiry deleted'); setDeleteOpen(false); setDeleteId(null); load();
+  1682→    } catch { toast.error('Delete failed'); }
+  1683→  };
+  1684→
+  1685→  const handleView = (inq: ContactInquiry) => { setViewInquiry(inq); setViewOpen(true); };
+  1686→
+  1687→  return (
+  1688→    <div className="space-y-4">
+  1689→      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+  1690→        <h1 className="text-2xl font-bold text-navy">Contact Inquiries</h1>
+  1691→        <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
+  1692→          <SelectTrigger className="w-40"><SelectValue placeholder="All Statuses" /></SelectTrigger>
+  1693→          <SelectContent>
+  1694→            <SelectItem value="all">All Statuses</SelectItem>
+  1695→            {INQUIRY_STATUSES.map((s) => (
+  1696→              <SelectItem key={s} value={s} className="capitalize">{s.replace('-', ' ')}</SelectItem>
+  1697→            ))}
+  1698→          </SelectContent>
+  1699→        </Select>
+  1700→      </div>
+  1701→
+  1702→      <Card>
+  1703→        <CardContent className="p-0">
+  1704→          {loading ? (
+  1705→            <div className="p-4 space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}</div>
+  1706→          ) : (
+  1707→            <div className="overflow-x-auto">
+  1708→              <Table>
+  1709→                <TableHeader>
+  1710→                  <TableRow>
+  1711→                    <TableHead>Name</TableHead>
+  1712→                    <TableHead className="hidden md:table-cell">Email</TableHead>
+  1713→                    <TableHead className="hidden lg:table-cell">Phone</TableHead>
+  1714→                    <TableHead className="hidden lg:table-cell">Service</TableHead>
+  1715→                    <TableHead>Status</TableHead>
+  1716→                    <TableHead className="hidden sm:table-cell">Date</TableHead>
+  1717→                    <TableHead className="text-right">Actions</TableHead>
+  1718→                  </TableRow>
+  1719→                </TableHeader>
+  1720→                <TableBody>
+  1721→                  {inquiries.length === 0 ? (
+  1722→                    <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted">No inquiries found</TableCell></TableRow>
+  1723→                  ) : inquiries.map((inq) => (
+  1724→                    <TableRow key={inq.id}>
+  1725→                      <TableCell className="font-medium">{inq.name}</TableCell>
+  1726→                      <TableCell className="hidden md:table-cell text-muted">{inq.email}</TableCell>
+  1727→                      <TableCell className="hidden lg:table-cell text-muted">{inq.phone || '—'}</TableCell>
+  1728→                      <TableCell className="hidden lg:table-cell text-muted">{inq.service || '—'}</TableCell>
+  1729→                      <TableCell>
+  1730→                        {updatingStatus === inq.id ? (
+  1731→                          <Loader2 className="size-4 animate-spin" />
+  1732→                        ) : (
+  1733→                          <DropdownMenu>
+  1734→                            <DropdownMenuTrigger asChild>
+  1735→                              <button className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity ${STATUS_COLORS[inq.status] || 'bg-gray-100 text-gray-800'}`}>
+  1736→                                {inq.status.replace('-', ' ')}
+  1737→                              </button>
+  1738→                            </DropdownMenuTrigger>
+  1739→                            <DropdownMenuContent align="start">
+  1740→                              {INQUIRY_STATUSES.map((s) => (
+  1741→                                <DropdownMenuItem key={s} onClick={() => handleStatusChange(inq.id, s)}>
+  1742→                                  {inq.status === s && <Check className="size-4 mr-1" />}
+  1743→                                  <span className="capitalize">{s.replace('-', ' ')}</span>
+  1744→                                </DropdownMenuItem>
+  1745→                              ))}
+  1746→                            </DropdownMenuContent>
+  1747→                          </DropdownMenu>
+  1748→                        )}
+  1749→                      </TableCell>
+  1750→                      <TableCell className="hidden sm:table-cell text-muted text-sm">{formatDate(inq.createdAt)}</TableCell>
+  1751→                      <TableCell className="text-right">
+  1752→                        <DropdownMenu>
+  1753→                          <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="size-8"><MoreHorizontal className="size-4" /></Button></DropdownMenuTrigger>
+  1754→                          <DropdownMenuContent align="end">
+  1755→                            <DropdownMenuItem onClick={() => handleView(inq)}><Eye className="size-4 mr-2" /> View</DropdownMenuItem>
+  1756→                            <DropdownMenuItem onClick={() => { setDeleteId(inq.id); setDeleteOpen(true); }} variant="destructive"><Trash2 className="size-4 mr-2" /> Delete</DropdownMenuItem>
+  1757→                          </DropdownMenuContent>
+  1758→                        </DropdownMenu>
+  1759→                      </TableCell>
+  1760→                    </TableRow>
+  1761→                  ))}
+  1762→                </TableBody>
+  1763→              </Table>
+  1764→            </div>
+  1765→          )}
+  1766→        </CardContent>
+  1767→      </Card>
+  1768→
+  1769→      {totalPages > 1 && (
+  1770→        <div className="flex items-center justify-center gap-2">
+  1771→          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}><ChevronLeft className="size-4" /></Button>
+  1772→          <span className="text-sm text-muted">Page {page} of {totalPages}</span>
+  1773→          <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}><ChevronRight className="size-4" /></Button>
+  1774→        </div>
+  1775→      )}
+  1776→
+  1777→      {/* View Dialog */}
+  1778→      <Dialog open={viewOpen} onOpenChange={setViewOpen}>
+  1779→        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+  1780→          <DialogHeader>
+  1781→            <DialogTitle className="text-navy">Inquiry Details</DialogTitle>
+  1782→          </DialogHeader>
+  1783→          {viewInquiry && (
+  1784→            <div className="space-y-4 py-2">
+  1785→              <div className="grid grid-cols-2 gap-4">
+  1786→                <div><p className="text-xs text-muted">Name</p><p className="font-medium text-sm">{viewInquiry.name}</p></div>
+  1787→                <div><p className="text-xs text-muted">Email</p><p className="font-medium text-sm">{viewInquiry.email}</p></div>
+  1788→                <div><p className="text-xs text-muted">Phone</p><p className="font-medium text-sm">{viewInquiry.phone || '—'}</p></div>
+  1789→                <div><p className="text-xs text-muted">Company</p><p className="font-medium text-sm">{viewInquiry.company || '—'}</p></div>
+  1790→                <div><p className="text-xs text-muted">Service</p><p className="font-medium text-sm">{viewInquiry.service || '—'}</p></div>
+  1791→                <div><p className="text-xs text-muted">Budget</p><p className="font-medium text-sm">{viewInquiry.budget || '—'}</p></div>
+  1792→                <div><p className="text-xs text-muted">Status</p>
+  1793→                  <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[viewInquiry.status] || ''}`}>
+  1794→                    {viewInquiry.status.replace('-', ' ')}
+  1795→                  </span>
+  1796→                </div>
+  1797→                <div><p className="text-xs text-muted">Date</p><p className="font-medium text-sm">{formatDate(viewInquiry.createdAt)}</p></div>
+  1798→              </div>
+  1799→              <Separator />
+  1800→              <div>
+  1801→                <p className="text-xs text-muted mb-1">Message</p>
+  1802→                <p className="text-sm whitespace-pre-wrap bg-light-gray p-4 rounded-lg">{viewInquiry.message}</p>
+  1803→              </div>
+  1804→            </div>
+  1805→          )}
+  1806→        </DialogContent>
+  1807→      </Dialog>
+  1808→
+  1809→      {/* Delete Dialog */}
+  1810→      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+  1811→        <DialogContent className="sm:max-w-md">
+  1812→          <DialogHeader><DialogTitle className="text-navy">Delete Inquiry</DialogTitle><DialogDescription>Are you sure? This cannot be undone.</DialogDescription></DialogHeader>
+  1813→          <DialogFooter><Button variant="outline" onClick={() => setDeleteOpen(false)}>Cancel</Button><Button variant="destructive" onClick={handleDelete}>Delete</Button></DialogFooter>
+  1814→        </DialogContent>
+  1815→      </Dialog>
+  1816→    </div>
+  1817→  );
+  1818→}
+  1819→
+  1820→// ==================== SETTINGS SECTION ====================
+  1821→
+  1822→function SettingsSection() {
+  1823→  const [form, setForm] = useState<SiteSettings>({
+  1824→    company_name: '', email: '', phone: '', whatsapp: '', address: '',
+  1825→    instagram: '', linkedin: '', github: '', facebook: '', footer_text: '',
+  1826→  });
+  1827→  const [loading, setLoading] = useState(true);
+  1828→  const [saving, setSaving] = useState(false);
+  1829→
+  1830→  const loadSettings = useCallback(async () => {
+  1831→    setLoading(true);
+  1832→    try {
+  1833→      const data = await apiFetch<Record<string, string>>('/api/admin/settings');
+  1834→      setForm((prev) => ({ ...prev, ...data }));
+  1835→    } catch { toast.error('Failed to load settings'); } finally { setLoading(false); }
+  1836→  }, []);
+  1837→
+  1838→  useEffect(() => { loadSettings(); }, [loadSettings]);
+  1839→
+  1840→  const handleSave = async () => {
+  1841→    setSaving(true);
+  1842→    try {
+  1843→      const settingsArray = Object.entries(form).map(([key, value]) => ({ key, value }));
+  1844→      await apiFetch('/api/admin/settings', {
+  1845→        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settingsArray),
+  1846→      });
+  1847→      toast.success('Settings saved!');
+  1848→    } catch { toast.error('Failed to save settings'); } finally { setSaving(false); }
+  1849→  };
+  1850→
+  1851→  const updateField = (key: keyof SiteSettings, value: string) => {
+  1852→    setForm((f) => ({ ...f, [key]: value }));
+  1853→  };
+  1854→
+  1855→  if (loading) {
+  1856→    return (
+  1857→      <div className="space-y-4">
+  1858→        <h1 className="text-2xl font-bold text-navy">Site Settings</h1>
+  1859→        <Card><CardContent className="p-6 space-y-4">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</CardContent></Card>
+  1860→      </div>
+  1861→    );
+  1862→  }
+  1863→
+  1864→  return (
+  1865→    <div className="space-y-4">
+  1866→      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+  1867→        <div>
+  1868→          <h1 className="text-2xl font-bold text-navy">Site Settings</h1>
+  1869→          <p className="text-muted text-sm mt-1">Manage your website configuration.</p>
+  1870→        </div>
+  1871→        <Button onClick={handleSave} disabled={saving} className="bg-gold hover:bg-gold/90 text-navy font-semibold gap-2">
+  1872→          {saving ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />} Save Settings
+  1873→        </Button>
+  1874→      </div>
+  1875→
+  1876→      <Card>
+  1877→        <CardContent className="p-6">
+  1878→          <div className="grid gap-6">
+  1879→            {SETTINGS_KEYS.map(({ key, label, icon: Icon }) => (
+  1880→              <div key={key} className="space-y-1.5">
+  1881→                <Label className="flex items-center gap-2 text-sm font-medium">
+  1882→                  <Icon className="size-4 text-muted" /> {label}
+  1883→                </Label>
+  1884→                {key === 'footer_text' || key === 'address' ? (
+  1885→                  <Textarea
+  1886→                    value={form[key]}
+  1887→                    onChange={(e) => updateField(key, e.target.value)}
+  1888→                    rows={key === 'address' ? 2 : 3}
+  1889→                    placeholder={`Enter ${label.toLowerCase()}...`}
+  1890→                  />
+  1891→                ) : (
+  1892→                  <Input
+  1893→                    value={form[key]}
+  1894→                    onChange={(e) => updateField(key, e.target.value)}
+  1895→                    placeholder={`Enter ${label.toLowerCase()}...`}
+  1896→                    type={key === 'email' ? 'email' : 'text'}
+  1897→                  />
+  1898→                )}
+  1899→              </div>
+  1900→            ))}
+  1901→          </div>
+  1902→        </CardContent>
+  1903→      </Card>
+  1904→    </div>
+  1905→  );
+  1906→}
+  1907→
+  1908→// ==================== AUTH STORE ====================
+  1909→
+  1910→let authListeners: (() => void)[] = [];
+  1911→
+  1912→function subscribeAuth(cb: () => void) {
+  1913→  authListeners = [...authListeners, cb];
+  1914→  return () => { authListeners = authListeners.filter((l) => l !== cb); };
+  1915→}
+  1916→function getAuthSnapshot() {
+  1917→  return localStorage.getItem('admin_auth') !== null;
+  1918→}
+  1919→function getAuthServerSnapshot() {
+  1920→  return false;
+  1921→}
+  1922→function setAuthValue(val: boolean) {
+  1923→  if (val) localStorage.setItem('admin_auth', '1');
+  1924→  else localStorage.removeItem('admin_auth');
+  1925→  authListeners.forEach((l) => l());
+  1926→}
+  1927→
+  1928→function noopSubscribe() { return () => {}; }
+  1929→
+  1930→// ==================== MAIN ADMIN PAGE ====================
+  1931→
+  1932→export default function AdminPage() {
+  1933→  const router = useRouter();
+  1934→  const isAuthenticated = useSyncExternalStore(subscribeAuth, getAuthSnapshot, getAuthServerSnapshot);
+  1935→  const mounted = useSyncExternalStore(noopSubscribe, () => true, () => false);
+  1936→  const [activeSection, setActiveSection] = useState<Section>('overview');
+  1937→  const [mobileOpen, setMobileOpen] = useState(false);
+  1938→
+  1939→  const handleLogout = () => {
+  1940→    setAuthValue(false);
+  1941→    toast.success('Logged out successfully');
+  1942→    router.push('/admin/login');
+  1943→  };
+  1944→
+  1945→  const handleNavigate = (section: Section) => {
+  1946→    setActiveSection(section);
+  1947→    setMobileOpen(false);
+  1948→  };
+  1949→
+  1950→  useEffect(() => {
+  1951→    if (mounted && !isAuthenticated) {
+  1952→      router.replace('/admin/login');
+  1953→    }
+  1954→  }, [mounted, isAuthenticated, router]);
+  1955→
+  1956→  if (!mounted) {
+  1957→    return (
+  1958→      <div className="min-h-screen flex items-center justify-center bg-light-gray">
+  1959→        <Loader2 className="size-8 animate-spin text-navy" />
+  1960→      </div>
+  1961→    );
+  1962→  }
+  1963→
+  1964→  if (!isAuthenticated) {
+  1965→    return (
+  1966→      <div className="min-h-screen flex items-center justify-center bg-light-gray">
+  1967→        <Loader2 className="size-8 animate-spin text-navy" />
+  1968→      </div>
+  1969→    );
+  1970→  }
+  1971→
+  1972→  const currentNav = NAV_ITEMS.find((n) => n.id === activeSection);
+  1973→
+  1974→  const renderContent = () => {
+  1975→    switch (activeSection) {
+  1976→      case 'overview': return <OverviewSection onNavigate={handleNavigate} />;
+  1977→      case 'projects': return <ProjectsSection />;
+  1978→      case 'blog': return <BlogSection />;
+  1979→      case 'testimonials': return <TestimonialsSection />;
+  1980→      case 'clients': return <ClientsSection />;
+  1981→      case 'services': return <ServicesSection />;
+  1982→      case 'contact': return <ContactSection />;
+  1983→      case 'settings': return <SettingsSection />;
+  1984→      default: return null;
+  1985→    }
+  1986→  };
+  1987→
+  1988→  return (
+  1989→    <div className="min-h-screen flex bg-light-gray">
+  1990→      {/* Desktop Sidebar */}
+  1991→      <aside className="hidden lg:flex w-64 shrink-0">
+  1992→        <div className="sticky top-0 h-screen w-full">
+  1993→          <SidebarNav activeSection={activeSection} onNavigate={handleNavigate} onLogout={handleLogout} onBack={() => window.location.href = '/'} />
+  1994→        </div>
+  1995→      </aside>
+  1996→
+  1997→      {/* Mobile Sidebar Sheet */}
+  1998→      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+  1999→        <SheetTrigger asChild>
+  2000→          <button className="lg:hidden fixed top-4 left-4 z-40 size-10 bg-navy text-white rounded-lg flex items-center justify-center shadow-md" aria-label="Open menu">
+
+[showing lines 1-2000 of 2031; use offset=2001 with limit to continue reading]
