@@ -91,7 +91,7 @@ export default function ProjectsPage() {
       <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/images/our-project-hero.jpg"
+            src="/images/project-hero.jpg"
             alt="Our Projects"
             fill
             className="object-cover"
